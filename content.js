@@ -48,11 +48,20 @@
   const apiBase = () => apiPath().replace(/\/webapi\/entry\.cgi$/, '');
   const token = () => root.dataset.spmToken || '';
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-  const fmtNum = (n) => n.toLocaleString('de-DE');
+  // UI texts: language chosen in the popup (langPack in chrome.storage.local,
+  // texts with $1..$9 placeholders) or else the browser language via chrome.i18n.
+  let langPack = null;
+  const msg = (key, ...subs) => {
+    const m = langPack && langPack.messages[key];
+    if (m) return m.replace(/\$(\d)/g, (_, i) => String(subs[i - 1] ?? ''));
+    return chrome.i18n.getMessage(key, subs.map(String)) || key;
+  };
+  const uiLang = () => (langPack ? langPack.lang : chrome.i18n.getUILanguage());
+  const fmtNum = (n) => n.toLocaleString(uiLang());
 
   class ApiError extends Error {
     constructor(api, code) {
-      super(`${api}: Fehlercode ${code}`);
+      super(`${api}: error code ${code}`);
       this.code = code;
     }
   }
@@ -66,7 +75,7 @@
     const t = token();
     if (t) headers['X-SYNO-TOKEN'] = t;
     const res = await fetch(apiPath(), { method: 'POST', credentials: 'same-origin', headers, body });
-    if (!res.ok) throw new Error(`HTTP ${res.status} bei ${api}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status} (${api})`);
     const json = await res.json();
     if (!json.success) throw new ApiError(api, json.error && json.error.code);
     return json.data;
@@ -88,14 +97,14 @@
   }
 
   function describeError(e) {
-    const msgs = {
-      102: 'API nicht gefunden – ist Synology Photos installiert?',
-      105: 'Keine Berechtigung.',
-      106: 'Sitzung abgelaufen – bitte neu anmelden.',
-      107: 'Sitzung wurde durch einen anderen Login beendet.',
-      119: 'Sitzung/Token ungültig – Seite neu laden (F5) und erneut versuchen.',
+    const keys = {
+      102: 'errApiMissing',
+      105: 'errNoPermission',
+      106: 'errSessionExpired',
+      107: 'errSessionReplaced',
+      119: 'errToken',
     };
-    return (e && msgs[e.code]) || (e && e.message) || String(e);
+    return (e && keys[e.code] && msg(keys[e.code])) || (e && e.message) || String(e);
   }
 
   // ---------- user identity (cache scope) ----------
@@ -208,7 +217,7 @@
           batch.push(entry);
         }
         if (batch.length) sendToFrame({ type: 'addItems', items: batch });
-        setStatus(`Lade … ${fmtNum(state.scanned)} Fotos geprüft, ${fmtNum(state.items.size)} mit Standort`);
+        setStatus(() => msg('statusProgress', fmtNum(state.scanned), fmtNum(state.items.size)), 'loading');
         offset += list.length;
       }
     } catch (e) {
@@ -227,7 +236,7 @@
     state.scanned = 0;
     hideDiagnostics();
     sendToFrame({ type: 'reset' });
-    setStatus('Lade …');
+    setStatus(() => msg('statusLoading'), 'loading');
     const started = performance.now();
 
     let fatalError = null;   // personal space failed before anything loaded
@@ -250,21 +259,21 @@
     sendToFrame({ type: 'done', saveUserKey: complete && state.items.size ? userKey : null });
 
     const n = state.items.size;
+    const scanned = state.scanned;
     const secs = ((performance.now() - started) / 1000).toFixed(1);
     console.info(`[Kartenansicht] ${state.scanned} Fotos geprüft, ${n} mit Standort, ${secs}s`);
     if (fatalError && n === 0) {
-      setStatus(`Fehler: ${describeError(fatalError)}`, true);
+      setStatus(() => msg('statusError', describeError(fatalError)), 'error');
       showDiagnostics(fatalError);
     } else if (partialError) {
-      setStatus(`Unvollständig: nach ${fmtNum(state.scanned)} Fotos abgebrochen (${describeError(partialError)}). `
-        + `${fmtNum(n)} mit Standort angezeigt – „Neu laden“ versucht es erneut.`, true);
+      setStatus(() => msg('statusIncomplete', fmtNum(scanned), describeError(partialError), fmtNum(n)), 'error');
       showDiagnostics(partialError);
     } else if (n === 0) {
-      setStatus(`Keine Fotos mit GPS-Daten gefunden (${fmtNum(state.scanned)} geprüft).`, true);
+      setStatus(() => msg('statusNone', fmtNum(scanned)), 'error');
       showDiagnostics(null);
     } else {
-      const cacheNote = !state.cacheAvailable || userKey ? '' : ' · Cache nicht verfügbar';
-      setStatus(`${fmtNum(n)} von ${fmtNum(state.scanned)} Fotos haben einen Standort${cacheNote}`);
+      const noCache = state.cacheAvailable && !userKey;
+      setStatus(() => msg('statusDone', fmtNum(n), fmtNum(scanned)) + (noCache ? msg('statusNoCache') : ''), 'done');
     }
   }
 
@@ -287,8 +296,8 @@
       sendToFrame({ type: 'reset' });
       sendToFrame({ type: 'addItems', items: cached.items });
       sendToFrame({ type: 'done' });
-      const date = new Date(cached.savedAt).toLocaleDateString('de-DE');
-      setStatus(`${fmtNum(cached.items.length)} Fotos mit Standort · Stand vom ${date} (Cache) – „Neu laden“ holt aktuelle Daten`);
+      const count = cached.items.length;
+      setStatus(() => msg('statusCached', fmtNum(count), new Date(cached.savedAt).toLocaleDateString(uiLang())), 'done');
       return;
     }
     await loadAll();
@@ -319,9 +328,9 @@
 
   async function fetchThumb({ key, size }) {
     const it = state.items.get(key);
-    if (!it) throw new Error('unbekanntes Foto');
+    if (!it) throw new Error('unknown photo');
     const space = SPACES.find((s) => s.name === it.space);
-    if (!space) throw new Error('unbekannter Bereich');
+    if (!space) throw new Error('unknown space');
     const order = state.thumbStrategy === null ? THUMB_STRATEGIES.map((_, i) => i) : [state.thumbStrategy];
     const t = token();
     for (const i of order) {
@@ -338,7 +347,7 @@
         }
       } catch (_) { /* try next strategy */ }
     }
-    throw new Error('Vorschaubild nicht verfügbar');
+    throw new Error('thumbnail unavailable');
   }
 
   const thumbQueue = [];
@@ -476,25 +485,57 @@
 
   // ---------- UI ----------
 
-  function setStatus(text, isError = false) {
-    if (!state.statusEl) return;
+  // render: () => text, so the status can be redrawn when the language changes.
+  // kind: 'loading' | 'done' | 'error' – also exposed as data-state for tests.
+  function setStatus(render, kind) {
+    state.statusRender = render;
+    state.statusKind = kind;
+    drawStatus();
+  }
+
+  function drawStatus() {
+    if (!state.statusEl || !state.statusRender) return;
+    const text = state.statusRender();
     state.statusEl.textContent = text;
     state.statusEl.title = text;
-    state.statusEl.classList.toggle('is-error', isError);
+    state.statusEl.dataset.state = state.statusKind;
+    state.statusEl.classList.toggle('is-error', state.statusKind === 'error');
+  }
+
+  /** (Re)applies all texts of button and overlay – on creation and on language change. */
+  function labelUI() {
+    const btn = document.querySelector('.spm-launcher');
+    if (btn) {
+      btn.title = msg('openMapTitle');
+      btn.querySelector('span').textContent = msg('mapButton');
+    }
+    const ov = state.overlay;
+    if (ov) {
+      ov.setAttribute('aria-label', msg('mapTitle'));
+      ov.querySelector('.spm-title').textContent = msg('mapButton');
+      ov.querySelector('.spm-reload').textContent = msg('reload');
+      ov.querySelector('.spm-close').setAttribute('aria-label', msg('close'));
+      ov.querySelector('.spm-close').title = msg('closeEsc');
+      ov.querySelector('.spm-diag-title').textContent = msg('diagTitle');
+      ov.querySelector('.spm-diag-text').textContent = msg('diagText');
+      ov.querySelector('.spm-copy').textContent = msg('copy');
+      ov.querySelector('.spm-frame').title = msg('mapTitle');
+    }
+    drawStatus();
   }
 
   function showDiagnostics(error) {
     if (!state.diagEl) return;
     const info = {
-      hinweis: 'Diese Infos helfen beim Anpassen der Erweiterung. Enthält Dateinamen, aber keine Passwörter/Tokens.',
+      hint: msg('diagHint'),
       version: chrome.runtime.getManifest().version,
-      apiPfad: apiPath(),
-      tokenGefunden: Boolean(token()),
-      fehler: error ? describeError(error) : null,
-      fehlercode: error && error.code !== undefined ? error.code : null,
-      geprueft: state.scanned,
-      mitStandort: state.items.size,
-      beispiele: state.samples,
+      apiPath: apiPath(),
+      tokenFound: Boolean(token()),
+      error: error ? describeError(error) : null,
+      errorCode: error && error.code !== undefined ? error.code : null,
+      checked: state.scanned,
+      withLocation: state.items.size,
+      samples: state.samples,
     };
     state.diagEl.querySelector('pre').textContent = JSON.stringify(info, null, 2).slice(0, 8000);
     state.diagEl.hidden = false;
@@ -511,35 +552,35 @@
     ov.className = 'spm-overlay';
     ov.hidden = true;
     ov.setAttribute('role', 'dialog');
-    ov.setAttribute('aria-label', 'Kartenansicht');
     ov.innerHTML = `
       <div class="spm-bar">
-        <strong class="spm-title">Karte</strong>
+        <strong class="spm-title"></strong>
         <span class="spm-status" aria-live="polite"></span>
-        <button type="button" class="spm-btn spm-reload">Neu laden</button>
-        <button type="button" class="spm-btn spm-close" aria-label="Schließen" title="Schließen (Esc)">✕</button>
+        <button type="button" class="spm-btn spm-reload"></button>
+        <button type="button" class="spm-btn spm-close">✕</button>
       </div>
       <div class="spm-diag" hidden>
-        <strong>Diagnose</strong> – bitte diesen Text kopieren und weitergeben, damit die Erweiterung angepasst werden kann.
+        <strong class="spm-diag-title"></strong> <span class="spm-diag-text"></span>
         <pre></pre>
-        <button type="button" class="spm-btn spm-copy">Kopieren</button>
+        <button type="button" class="spm-btn spm-copy"></button>
       </div>
-      <iframe class="spm-frame" title="Kartenansicht"></iframe>`;
+      <iframe class="spm-frame"></iframe>`;
     document.body.appendChild(ov);
 
     state.overlay = ov;
     state.statusEl = ov.querySelector('.spm-status');
     state.diagEl = ov.querySelector('.spm-diag');
     state.iframe = ov.querySelector('.spm-frame');
+    labelUI();
 
     ov.querySelector('.spm-close').addEventListener('click', closeOverlay);
     ov.querySelector('.spm-reload').addEventListener('click', () => loadAll());
     ov.querySelector('.spm-copy').addEventListener('click', async (e) => {
       try {
         await navigator.clipboard.writeText(state.diagEl.querySelector('pre').textContent);
-        e.target.textContent = 'Kopiert';
+        e.target.textContent = msg('copied');
       } catch (_) {
-        e.target.textContent = 'Bitte manuell markieren';
+        e.target.textContent = msg('copyManual');
       }
     });
     document.addEventListener('keydown', (e) => {
@@ -570,10 +611,10 @@
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'spm-launcher';
-    btn.title = 'Kartenansicht öffnen';
-    btn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg><span>Karte</span>';
+    btn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg><span></span>';
     btn.addEventListener('click', openOverlay);
     document.body.appendChild(btn);
+    labelUI();
     applyTheme();
     const update = () => { btn.hidden = !looksLikePhotos(); };
     update();
@@ -587,17 +628,29 @@
     document.querySelectorAll('.spm-launcher, .spm-overlay')
       .forEach((el) => el.classList.toggle('spm-mono', monoTheme));
   }
-  chrome.storage.local.get('theme')
-    .then(({ theme }) => { monoTheme = theme === 'mono'; applyTheme(); })
-    .catch(() => { /* default theme */ });
+  // Theme and language are chosen in the popup and apply live.
+  chrome.storage.local.get(['theme', 'langPack'])
+    .then(({ theme, langPack: pack }) => {
+      monoTheme = theme === 'mono';
+      langPack = pack || null;
+      applyTheme();
+      labelUI();
+    })
+    .catch(() => { /* defaults */ });
   chrome.storage.onChanged.addListener((changes, area) => {
-    if (area !== 'local' || !changes.theme) return;
-    monoTheme = changes.theme.newValue === 'mono';
-    applyTheme();
+    if (area !== 'local') return;
+    if (changes.theme) {
+      monoTheme = changes.theme.newValue === 'mono';
+      applyTheme();
+    }
+    if (changes.langPack) {
+      langPack = changes.langPack.newValue || null;
+      labelUI();
+    }
   });
 
-  chrome.runtime.onMessage.addListener((msg, _sender, reply) => {
-    if (msg && msg.type === 'spm-open') {
+  chrome.runtime.onMessage.addListener((message, _sender, reply) => {
+    if (message && message.type === 'spm-open') {
       openOverlay();
       reply({ ok: true });
     }

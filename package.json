@@ -1,6 +1,7 @@
 {
   "name": "synology-photos-map",
   "private": true,
+  "license": "MIT",
   "description": "Kartenansicht für die Weboberfläche von Synology Photos (Chrome/Edge-Erweiterung)",
   "engines": {
     "node": ">=22"

@@ -1,0 +1,192 @@
+{
+  "extName": {
+    "message": "Synology Photos – Kartenansicht"
+  },
+  "extDescription": {
+    "message": "Ergänzt die Weboberfläche von Synology Photos um eine Kartenansicht für Fotos mit GPS-Daten."
+  },
+  "mapTitle": {
+    "message": "Kartenansicht"
+  },
+  "mapButton": {
+    "message": "Karte"
+  },
+  "openMapTitle": {
+    "message": "Kartenansicht öffnen"
+  },
+  "reload": {
+    "message": "Neu laden"
+  },
+  "close": {
+    "message": "Schließen"
+  },
+  "closeEsc": {
+    "message": "Schließen (Esc)"
+  },
+  "diagTitle": {
+    "message": "Diagnose"
+  },
+  "diagText": {
+    "message": "– bitte diesen Text kopieren und weitergeben, damit die Erweiterung angepasst werden kann."
+  },
+  "diagHint": {
+    "message": "Diese Infos helfen beim Anpassen der Erweiterung. Enthält Dateinamen, aber keine Passwörter/Tokens."
+  },
+  "copy": {
+    "message": "Kopieren"
+  },
+  "copied": {
+    "message": "Kopiert"
+  },
+  "copyManual": {
+    "message": "Bitte manuell markieren"
+  },
+  "errApiMissing": {
+    "message": "API nicht gefunden – ist Synology Photos installiert?"
+  },
+  "errNoPermission": {
+    "message": "Keine Berechtigung."
+  },
+  "errSessionExpired": {
+    "message": "Sitzung abgelaufen – bitte neu anmelden."
+  },
+  "errSessionReplaced": {
+    "message": "Sitzung wurde durch einen anderen Login beendet."
+  },
+  "errToken": {
+    "message": "Sitzung/Token ungültig – Seite neu laden (F5) und erneut versuchen."
+  },
+  "statusLoading": {
+    "message": "Lade …"
+  },
+  "statusProgress": {
+    "message": "Lade … $scanned$ Fotos geprüft, $located$ mit Standort",
+    "placeholders": {
+      "scanned": {
+        "content": "$1"
+      },
+      "located": {
+        "content": "$2"
+      }
+    }
+  },
+  "statusError": {
+    "message": "Fehler: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "statusIncomplete": {
+    "message": "Unvollständig: nach $scanned$ Fotos abgebrochen ($error$). $located$ mit Standort angezeigt – „Neu laden“ versucht es erneut.",
+    "placeholders": {
+      "scanned": {
+        "content": "$1"
+      },
+      "error": {
+        "content": "$2"
+      },
+      "located": {
+        "content": "$3"
+      }
+    }
+  },
+  "statusNone": {
+    "message": "Keine Fotos mit GPS-Daten gefunden ($scanned$ geprüft).",
+    "placeholders": {
+      "scanned": {
+        "content": "$1"
+      }
+    }
+  },
+  "statusDone": {
+    "message": "$located$ von $scanned$ Fotos haben einen Standort",
+    "placeholders": {
+      "located": {
+        "content": "$1"
+      },
+      "scanned": {
+        "content": "$2"
+      }
+    }
+  },
+  "statusNoCache": {
+    "message": " · Cache nicht verfügbar"
+  },
+  "statusCached": {
+    "message": "$located$ Fotos mit Standort · Stand vom $date$ (Cache) – „Neu laden“ holt aktuelle Daten",
+    "placeholders": {
+      "located": {
+        "content": "$1"
+      },
+      "date": {
+        "content": "$2"
+      }
+    }
+  },
+  "popupOpen": {
+    "message": "Karte öffnen"
+  },
+  "popupEnable": {
+    "message": "Für diese Adresse aktivieren"
+  },
+  "popupClearCache": {
+    "message": "Cache leeren"
+  },
+  "popupDisable": {
+    "message": "Deaktivieren"
+  },
+  "popupMono": {
+    "message": "Schwarz-Weiß"
+  },
+  "popupLanguage": {
+    "message": "Sprache"
+  },
+  "popupLangAuto": {
+    "message": "Auto"
+  },
+  "popupActive": {
+    "message": "Aktiv – unten rechts erscheint in Synology Photos der Button „Karte“."
+  },
+  "popupInactive": {
+    "message": "Für diese Adresse noch nicht aktiviert."
+  },
+  "popupNoPage": {
+    "message": "Öffne zuerst Synology Photos in diesem Tab und klicke dann erneut auf die Erweiterung."
+  },
+  "popupDenied": {
+    "message": "Zugriff wurde nicht erlaubt."
+  },
+  "popupEnableError": {
+    "message": "Fehler beim Aktivieren: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "popupReloadFirst": {
+    "message": "Die Seite kennt die Erweiterung noch nicht – bitte einmal neu laden (F5)."
+  },
+  "popupDisabled": {
+    "message": "Deaktiviert. Seite neu laden, damit der Button verschwindet."
+  },
+  "popupError": {
+    "message": "Fehler: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "cacheCleared": {
+    "message": "Cache geleert. Beim nächsten Öffnen wird alles neu von der NAS geladen."
+  },
+  "cacheClearFailed": {
+    "message": "Cache konnte nicht geleert werden."
+  },
+  "cacheClearPending": {
+    "message": "Cache wird geleert, sobald die Karte geschlossen bzw. der Tab neu geladen ist."
+  }
+}

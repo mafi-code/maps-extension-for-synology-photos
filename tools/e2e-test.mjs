@@ -20,12 +20,14 @@ const makeItems = (n) => Array.from({ length: n }, (_, i) => item(i + 1));
 const thumb = (id) => `<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120"><rect width="120" height="120" fill="hsl(${(id * 47) % 360},60%,55%)"/></svg>`;
 const fmt = (n) => n.toLocaleString('de-DE');
 
-async function scenario(title, { total, flaky = false, port, reload = false }, verify) {
+async function scenario(title, { total, flaky = false, port, reload = false, lang = 'de-DE' }, verify) {
   console.log(`\n${title}`);
   const mock = createMockSynology({ items: makeItems(total), thumb, flaky });
   await mock.listen(port);
-  const cdp = await launchBrowser({ extDir: makeTestExtension(), port: port + 1000 });
-  const statusOf = (page) => cdp.evaluate(page, `(document.querySelector('.spm-status')||{}).textContent||''`);
+  const cdp = await launchBrowser({ extDir: makeTestExtension(), port: port + 1000, lang });
+  // final states ("done" / "error") come from content.js as data-state – language independent
+  const statusOf = (page) => cdp.evaluate(page, `(() => { const s = document.querySelector('.spm-status');
+    return s && /^(done|error)$/.test(s.dataset.state || '') ? s.textContent : ''; })()`);
   const openMap = async () => {
     const page = await cdp.openPage(`http://127.0.0.1:${port}/`);
     await waitFor(() => cdp.evaluate(page, `!!document.querySelector('.spm-launcher')`).catch(() => false));
@@ -35,12 +37,8 @@ async function scenario(title, { total, flaky = false, port, reload = false }, v
     let page = await openMap();
     await verify.beforeOpen?.(cdp, page);
     await cdp.evaluate(page, `document.querySelector('.spm-launcher').click()`);
-    const status = await waitFor(async () => {
-      const s = await statusOf(page);
-      // final states only – "Lade … X mit Standort" is still in progress
-      return /haben einen Standort|Fehler|Unvollständig|Keine Fotos/.test(s) ? s : '';
-    }, { timeoutMs: 60000 });
-    await verify.afterLoad(status, mock);
+    const status = await waitFor(() => statusOf(page), { timeoutMs: 60000 });
+    await verify.afterLoad(status, mock, cdp, page);
 
     if (reload) {
       const listCallsBefore = mock.calls.filter((c) => c.method === 'list').length;
@@ -48,10 +46,7 @@ async function scenario(title, { total, flaky = false, port, reload = false }, v
       await sleep(1500);
       await waitFor(() => cdp.evaluate(page, `!!document.querySelector('.spm-launcher')`).catch(() => false));
       await cdp.evaluate(page, `document.querySelector('.spm-launcher').click()`);
-      const cached = await waitFor(async () => {
-        const s = await statusOf(page);
-        return /Standort/.test(s) ? s : '';
-      });
+      const cached = await waitFor(() => statusOf(page));
       const listCallsAfter = mock.calls.filter((c) => c.method === 'list').length;
       await verify.afterReload(cached, listCallsAfter - listCallsBefore);
     }
@@ -81,6 +76,37 @@ await scenario('1) Erstes Laden + Cache nach Neuladen', { total: 1200, port: 880
 await scenario('2) 70.000 Fotos mit NAS-Aussetzer und kurzer Seite', { total: 70000, flaky: true, port: 8802 }, {
   async afterLoad(status) {
     check('trotz Fehler vollständig geladen', status === `${fmt(46667)} von ${fmt(70000)} Fotos haben einen Standort`, status);
+  },
+});
+
+await scenario('3) Englische Oberfläche (Browser auf en-US)', { total: 30, port: 8803, lang: 'en-US' }, {
+  async beforeOpen(cdp, page) {
+    const label = await cdp.evaluate(page, `document.querySelector('.spm-launcher span').textContent`);
+    check('Button heißt „Map“', label === 'Map', label);
+  },
+  async afterLoad(status) {
+    check('Status auf Englisch', status === '20 of 30 photos have a location', status);
+  },
+});
+
+await scenario('4) Sprache im Popup umschalten (Browser auf de-DE)', { total: 30, port: 8804 }, {
+  async afterLoad(status, mock, cdp, page) {
+    const label = () => cdp.evaluate(page, `document.querySelector('.spm-launcher span').textContent`);
+    const statusText = () => cdp.evaluate(page, `document.querySelector('.spm-status').textContent`);
+    check('startet auf Deutsch', (await label()) === 'Karte' && status === '20 von 30 Fotos haben einen Standort', status);
+
+    const { extOrigin } = await cdp.findMapFrame();
+    const popup = await cdp.openPage(`${extOrigin}/popup.html`, { width: 320, height: 500 });
+    // wait until popup.js has run (click handlers attached), not just the HTML
+    await waitFor(() => cdp.evaluate(popup, `typeof loadLangPack === 'function'`).catch(() => false));
+    await cdp.evaluate(popup, `document.querySelector('.seg [data-lang="en"]').click()`);
+    const en = await waitFor(async () => ((await label()) === 'Map' ? statusText() : ''));
+    check('EN gewählt: Button und Status live auf Englisch', en === '20 of 30 photos have a location', en);
+    check('Popup selbst auf Englisch', (await cdp.evaluate(popup, `document.getElementById('clear').textContent`)) === 'Clear cache');
+
+    await cdp.evaluate(popup, `document.querySelector('.seg [data-lang="auto"]').click()`);
+    const back = await waitFor(async () => ((await label()) === 'Karte' ? statusText() : ''));
+    check('Auto gewählt: zurück zur Browsersprache', back === '20 von 30 Fotos haben einen Standort', back);
   },
 });
 

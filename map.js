@@ -16,6 +16,24 @@
     });
   }
 
+  // Language: chosen in the popup (langPack) or the browser UI language.
+  // Only affects the date format in the photo popup.
+  const hasChrome = typeof chrome !== 'undefined' && chrome.i18n && chrome.storage;
+  let langPack = null;
+  const uiLang = () => (langPack ? langPack.lang : hasChrome ? chrome.i18n.getUILanguage() : navigator.language);
+  const applyLang = () => {
+    document.documentElement.lang = uiLang();
+    const title = langPack ? langPack.messages.mapTitle : hasChrome && chrome.i18n.getMessage('mapTitle');
+    if (title) document.title = title;
+  };
+  applyLang();
+  if (hasChrome) {
+    chrome.storage.local.get('langPack').then(({ langPack: p }) => { langPack = p || null; applyLang(); }).catch(() => {});
+    chrome.storage.onChanged.addListener((changes, area) => {
+      if (area === 'local' && changes.langPack) { langPack = changes.langPack.newValue || null; applyLang(); }
+    });
+  }
+
   const MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
   const CACHED_THUMB_SIZES = new Set(['sm', 'm']); // xl previews are big – not cached
   let trusted = false;
@@ -296,7 +314,7 @@
   function formatDate(seconds) {
     if (!seconds) return '';
     // Synology stores the capture time as local time encoded as UTC.
-    return new Date(seconds * 1000).toLocaleString('de-DE', {
+    return new Date(seconds * 1000).toLocaleString(uiLang(), {
       timeZone: 'UTC', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit',
     });
   }

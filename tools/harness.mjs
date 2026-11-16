@@ -13,7 +13,7 @@ export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const EXT_FILES = ['manifest.json', 'content.js', 'content.css', 'map.html', 'map.js', 'map.css',
-  'page-hook.js', 'popup.html', 'popup.js', 'vendor', 'icons'];
+  'page-hook.js', 'popup.html', 'popup.js', 'vendor', 'icons', '_locales'];
 
 // ---------- test copy of the extension ----------
 
@@ -210,12 +210,13 @@ class Cdp {
   }
 }
 
-export async function launchBrowser({ extDir, port }) {
+/** lang: browser UI language, decides which _locales/<lang> the extension uses. */
+export async function launchBrowser({ extDir, port, lang = 'de-DE' }) {
   const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'spm-profile-'));
   const extArgs = extDir ? [`--load-extension=${extDir}`, `--disable-extensions-except=${extDir}`] : [];
   const proc = spawn(findBrowser(), [
     '--headless=new', `--remote-debugging-port=${port}`, `--user-data-dir=${profile}`,
-    ...extArgs, '--no-first-run', '--hide-scrollbars', '--lang=de-DE', 'about:blank',
+    ...extArgs, '--no-first-run', '--hide-scrollbars', `--lang=${lang}`, 'about:blank',
   ], { stdio: 'ignore' });
 
   let ws = null;

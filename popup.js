@@ -5,6 +5,54 @@ const $ = (id) => document.getElementById(id);
 const hint = (text) => { $('hint').textContent = text; };
 const scriptId = (pattern, kind) => `spm-${kind}-${pattern.replace(/[^a-z0-9]/gi, '_')}`;
 
+// UI language: "Auto" = browser language via chrome.i18n, or a language chosen
+// here. A chosen language is stored as langPack ({ lang, messages } with $1..$9
+// placeholders) in chrome.storage.local; content.js and map.js follow it live.
+// localStorage only mirrors it so the popup opens without flashing the wrong language.
+let langPack = null;
+let stateKey = null; // message key of the status text, redrawn on language change
+const msg = (key, ...subs) => {
+  const m = langPack && langPack.messages[key];
+  if (m) return m.replace(/\$(\d)/g, (_, i) => String(subs[i - 1] ?? ''));
+  return chrome.i18n.getMessage(key, subs.map(String)) || key;
+};
+
+function applyI18n() {
+  document.documentElement.lang = langPack ? langPack.lang : chrome.i18n.getUILanguage();
+  document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = msg(el.dataset.i18n); });
+  if (stateKey) $('state').textContent = msg(stateKey);
+  const current = langPack ? langPack.lang : 'auto';
+  document.querySelectorAll('.seg [data-lang]').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.lang === current)));
+}
+
+/** Builds { lang, messages } from _locales/<lang>/messages.json (named placeholders → $1..$9). */
+async function loadLangPack(lang) {
+  const raw = await (await fetch(chrome.runtime.getURL(`_locales/${lang}/messages.json`))).json();
+  const messages = {};
+  for (const [key, { message, placeholders = {} }] of Object.entries(raw)) {
+    messages[key] = message.replace(/\$([A-Za-z0-9_]+)\$/g, (_, name) => (placeholders[name.toLowerCase()] || {}).content || '');
+  }
+  return { lang, messages };
+}
+
+try { langPack = JSON.parse(localStorage.getItem('spm-langpack') || 'null'); } catch (_) { /* storage blocked */ }
+applyI18n();
+let langChosen = false; // a click wins over the stored value that is still loading
+chrome.storage.local.get('langPack').then(({ langPack: p }) => {
+  if (langChosen) return;
+  langPack = p || null;
+  applyI18n();
+}).catch(() => {});
+document.querySelectorAll('.seg [data-lang]').forEach((b) => b.addEventListener('click', async () => {
+  langChosen = true;
+  const lang = b.dataset.lang;
+  langPack = lang === 'auto' ? null : await loadLangPack(lang);
+  applyI18n();
+  if (langPack) await chrome.storage.local.set({ langPack });
+  else await chrome.storage.local.remove('langPack');
+  try { localStorage.setItem('spm-langpack', JSON.stringify(langPack)); } catch (_) { /* mirror only */ }
+}));
+
 // Theme: cyberpunk (default) or black & white. Stored in chrome.storage.local
 // so the button/overlay on the Synology page (content.js) follows it live.
 // localStorage only mirrors it so the popup opens without a colour flash.
@@ -59,9 +107,8 @@ async function register(pattern) {
 }
 
 function render(enabled) {
-  $('state').textContent = enabled
-    ? 'Aktiv – unten rechts erscheint in Synology Photos der Button „Karte“.'
-    : 'Für diese Adresse noch nicht aktiviert.';
+  stateKey = enabled ? 'popupActive' : 'popupInactive';
+  $('state').textContent = msg(stateKey);
   $('state').classList.toggle('is-on', enabled);
   $('open').hidden = !enabled;
   $('disable').hidden = !enabled;
@@ -72,9 +119,9 @@ function render(enabled) {
 // IndexedDB (same origin as this popup), so the popup can wipe it.
 $('clear').addEventListener('click', () => {
   const req = indexedDB.deleteDatabase('spm-cache');
-  req.onsuccess = () => hint('Cache geleert. Beim nächsten Öffnen wird alles neu von der NAS geladen.');
-  req.onerror = () => hint('Cache konnte nicht geleert werden.');
-  req.onblocked = () => hint('Cache wird geleert, sobald die Karte geschlossen bzw. der Tab neu geladen ist.');
+  req.onsuccess = () => hint(msg('cacheCleared'));
+  req.onerror = () => hint(msg('cacheClearFailed'));
+  req.onblocked = () => hint(msg('cacheClearPending'));
 });
 
 (async () => {
@@ -83,7 +130,8 @@ $('clear').addEventListener('click', () => {
   try { url = new URL(tab.url); } catch (_) { /* no URL access */ }
 
   if (!url || !/^https?:$/.test(url.protocol)) {
-    $('state').textContent = 'Öffne zuerst Synology Photos in diesem Tab und klicke dann erneut auf die Erweiterung.';
+    stateKey = 'popupNoPage';
+    $('state').textContent = msg(stateKey);
     return;
   }
 
@@ -96,7 +144,7 @@ $('clear').addEventListener('click', () => {
     // permissions.request must run directly in the click handler.
     const granted = await chrome.permissions.request({ origins: [pattern] });
     if (!granted) {
-      hint('Zugriff wurde nicht erlaubt.');
+      hint(msg('popupDenied'));
       return;
     }
     try {
@@ -104,7 +152,7 @@ $('clear').addEventListener('click', () => {
       await chrome.tabs.reload(tab.id);
       window.close();
     } catch (e) {
-      hint(`Fehler beim Aktivieren: ${e.message}`);
+      hint(msg('popupEnableError', e.message));
     }
   });
 
@@ -113,7 +161,7 @@ $('clear').addEventListener('click', () => {
       await chrome.tabs.sendMessage(tab.id, { type: 'spm-open' });
       window.close();
     } catch (_) {
-      hint('Die Seite kennt die Erweiterung noch nicht – bitte einmal neu laden (F5).');
+      hint(msg('popupReloadFirst'));
     }
   });
 
@@ -122,9 +170,9 @@ $('clear').addEventListener('click', () => {
       await unregister(pattern);
       await chrome.permissions.remove({ origins: [pattern] });
       render(false);
-      hint('Deaktiviert. Seite neu laden, damit der Button verschwindet.');
+      hint(msg('popupDisabled'));
     } catch (e) {
-      hint(`Fehler: ${e.message}`);
+      hint(msg('popupError', e.message));
     }
   });
 })();

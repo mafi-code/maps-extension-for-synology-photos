@@ -13,6 +13,7 @@ const JOBS = [
   ['assets/logo.svg', 128, 128, 1, 'icons/icon128.png'],
   ['assets/logo.svg', 512, 512, 1, 'docs/logo.png'],
   ['assets/banner.svg', 1200, 360, 2, 'docs/banner.png'],
+  ['assets/banner-de.svg', 1200, 360, 2, 'docs/banner-de.png'],
 ];
 
 const cdp = await launchBrowser({ port: 9466 });

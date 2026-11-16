@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
-  <title>Kartenansicht</title>
+  <title data-i18n="mapTitle">Map view</title>
   <style>
     /* Cyberpunk – palette and design language of Marktplatz Hub (dashboard.css). */
     :root {
@@ -165,6 +165,36 @@
       text-transform: uppercase;
       color: var(--muted);
     }
+    .theme + .theme { margin-top: 10px; padding-top: 0; border-top: 0; }
+
+    /* language selector: Auto | EN | DE */
+    .seg { display: flex; flex: none; }
+    .seg button {
+      width: auto;
+      height: 22px;
+      margin: 0;
+      padding: 0 9px;
+      border: 1px solid var(--border-glow);
+      border-radius: 0;
+      background: var(--bg-2);
+      color: var(--muted);
+      font: 600 11px/1 var(--mono);
+      letter-spacing: 1px;
+      box-shadow: none;
+    }
+    .seg button + button { margin-left: -1px; }
+    .seg button:first-child { border-radius: 4px 0 0 4px; }
+    .seg button:last-child { border-radius: 0 4px 4px 0; }
+    .seg button:hover { color: var(--accent); border-color: var(--accent); box-shadow: none; position: relative; z-index: 2; }
+    .seg button[aria-checked="true"] {
+      position: relative;
+      z-index: 1;
+      color: var(--accent);
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      box-shadow: var(--glow);
+    }
+
     #theme-toggle {
       position: relative;
       flex: none;
@@ -198,18 +228,26 @@
   <header>
     <img src="icons/icon48.png" alt="">
     <div>
-      <h1>Kartenansicht</h1>
+      <h1 data-i18n="mapTitle">Map view</h1>
       <p id="site"></p>
     </div>
   </header>
   <p id="state"></p>
-  <button id="open" class="primary" hidden>Karte öffnen</button>
-  <button id="enable" class="primary" hidden>Für diese Adresse aktivieren</button>
-  <button id="clear">Cache leeren</button>
-  <button id="disable" hidden>Deaktivieren</button>
+  <button id="open" class="primary" hidden data-i18n="popupOpen">Open map</button>
+  <button id="enable" class="primary" hidden data-i18n="popupEnable">Enable for this address</button>
+  <button id="clear" data-i18n="popupClearCache">Clear cache</button>
+  <button id="disable" hidden data-i18n="popupDisable">Disable</button>
   <p id="hint"></p>
   <div class="theme">
-    <span id="theme-label">Schwarz-Weiß</span>
+    <span id="lang-label" data-i18n="popupLanguage">Language</span>
+    <div class="seg" role="radiogroup" aria-labelledby="lang-label">
+      <button type="button" role="radio" data-lang="auto" data-i18n="popupLangAuto">Auto</button>
+      <button type="button" role="radio" data-lang="en" lang="en">EN</button>
+      <button type="button" role="radio" data-lang="de" lang="de">DE</button>
+    </div>
+  </div>
+  <div class="theme">
+    <span id="theme-label" data-i18n="popupMono">Black &amp; white</span>
     <button id="theme-toggle" type="button" role="switch" aria-checked="false" aria-labelledby="theme-label"></button>
   </div>
   <script src="popup.js"></script>

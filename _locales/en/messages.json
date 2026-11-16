@@ -1,0 +1,192 @@
+{
+  "extName": {
+    "message": "Map View for Synology Photos"
+  },
+  "extDescription": {
+    "message": "Adds a map view with all geotagged photos to the Synology Photos web interface."
+  },
+  "mapTitle": {
+    "message": "Map view"
+  },
+  "mapButton": {
+    "message": "Map"
+  },
+  "openMapTitle": {
+    "message": "Open map view"
+  },
+  "reload": {
+    "message": "Reload"
+  },
+  "close": {
+    "message": "Close"
+  },
+  "closeEsc": {
+    "message": "Close (Esc)"
+  },
+  "diagTitle": {
+    "message": "Diagnostics"
+  },
+  "diagText": {
+    "message": "– please copy this text and pass it on so the extension can be adjusted."
+  },
+  "diagHint": {
+    "message": "This information helps to adjust the extension. Contains file names, but no passwords or tokens."
+  },
+  "copy": {
+    "message": "Copy"
+  },
+  "copied": {
+    "message": "Copied"
+  },
+  "copyManual": {
+    "message": "Please select manually"
+  },
+  "errApiMissing": {
+    "message": "API not found – is Synology Photos installed?"
+  },
+  "errNoPermission": {
+    "message": "No permission."
+  },
+  "errSessionExpired": {
+    "message": "Session expired – please sign in again."
+  },
+  "errSessionReplaced": {
+    "message": "Session was ended by another login."
+  },
+  "errToken": {
+    "message": "Session/token invalid – reload the page (F5) and try again."
+  },
+  "statusLoading": {
+    "message": "Loading …"
+  },
+  "statusProgress": {
+    "message": "Loading … $scanned$ photos checked, $located$ with location",
+    "placeholders": {
+      "scanned": {
+        "content": "$1"
+      },
+      "located": {
+        "content": "$2"
+      }
+    }
+  },
+  "statusError": {
+    "message": "Error: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "statusIncomplete": {
+    "message": "Incomplete: stopped after $scanned$ photos ($error$). $located$ with location shown – “Reload” tries again.",
+    "placeholders": {
+      "scanned": {
+        "content": "$1"
+      },
+      "error": {
+        "content": "$2"
+      },
+      "located": {
+        "content": "$3"
+      }
+    }
+  },
+  "statusNone": {
+    "message": "No photos with GPS data found ($scanned$ checked).",
+    "placeholders": {
+      "scanned": {
+        "content": "$1"
+      }
+    }
+  },
+  "statusDone": {
+    "message": "$located$ of $scanned$ photos have a location",
+    "placeholders": {
+      "located": {
+        "content": "$1"
+      },
+      "scanned": {
+        "content": "$2"
+      }
+    }
+  },
+  "statusNoCache": {
+    "message": " · cache unavailable"
+  },
+  "statusCached": {
+    "message": "$located$ photos with location · as of $date$ (cache) – “Reload” fetches current data",
+    "placeholders": {
+      "located": {
+        "content": "$1"
+      },
+      "date": {
+        "content": "$2"
+      }
+    }
+  },
+  "popupOpen": {
+    "message": "Open map"
+  },
+  "popupEnable": {
+    "message": "Enable for this address"
+  },
+  "popupClearCache": {
+    "message": "Clear cache"
+  },
+  "popupDisable": {
+    "message": "Disable"
+  },
+  "popupMono": {
+    "message": "Black & white"
+  },
+  "popupLanguage": {
+    "message": "Language"
+  },
+  "popupLangAuto": {
+    "message": "Auto"
+  },
+  "popupActive": {
+    "message": "Active – the “Map” button appears at the bottom right in Synology Photos."
+  },
+  "popupInactive": {
+    "message": "Not enabled for this address yet."
+  },
+  "popupNoPage": {
+    "message": "Open Synology Photos in this tab first, then click the extension again."
+  },
+  "popupDenied": {
+    "message": "Access was not granted."
+  },
+  "popupEnableError": {
+    "message": "Could not enable: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "popupReloadFirst": {
+    "message": "The page doesn’t know the extension yet – please reload it once (F5)."
+  },
+  "popupDisabled": {
+    "message": "Disabled. Reload the page to remove the button."
+  },
+  "popupError": {
+    "message": "Error: $error$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "cacheCleared": {
+    "message": "Cache cleared. Everything will be loaded from the NAS again next time."
+  },
+  "cacheClearFailed": {
+    "message": "The cache could not be cleared."
+  },
+  "cacheClearPending": {
+    "message": "The cache will be cleared once the map is closed or the tab is reloaded."
+  }
+}

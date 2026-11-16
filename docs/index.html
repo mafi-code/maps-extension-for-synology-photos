@@ -1,11 +1,13 @@
 <!doctype html>
-<html lang="de">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Kartenansicht für Synology Photos</title>
-  <meta name="description" content="Browser-Erweiterung für Chrome und Edge: zeigt alle Fotos mit GPS-Daten aus Synology Photos auf einer Karte – direkt in der Weboberfläche.">
+  <title>Map View for Synology Photos</title>
+  <meta name="description" content="Browser extension for Chrome and Edge: shows every geotagged photo from Synology Photos on a map – right in the web interface.">
   <link rel="icon" type="image/png" href="logo.png">
+  <link rel="alternate" hreflang="en" href="index.html">
+  <link rel="alternate" hreflang="de" href="de.html">
   <style>
     :root {
       --bg: #f6f7f9;
@@ -158,122 +160,123 @@
     <div class="wrap">
       <a class="brand" href="#">
         <img src="logo.png" width="32" height="32" alt="">
-        Kartenansicht für Synology Photos
+        Map View for Synology Photos
       </a>
-      <nav aria-label="Seitennavigation">
+      <nav aria-label="Page navigation">
         <a href="#screenshots">Screenshots</a>
-        <a href="#funktionsweise">Funktionsweise</a>
+        <a href="#how-it-works">How it works</a>
         <a href="#stack">Stack</a>
         <a href="#installation">Installation</a>
+        <a href="de.html" hreflang="de" lang="de">Deutsch</a>
       </nav>
     </div>
   </header>
 
   <main>
     <div class="wrap hero">
-      <span class="eyebrow">Browser-Erweiterung · Chrome &amp; Edge</span>
-      <h1>Alle Fotos mit Standort auf einer Karte</h1>
-      <p class="lead">Die Apps von Synology Photos haben eine Kartenansicht, die Weboberfläche nicht. Diese Erweiterung ergänzt sie: ein Klick auf „Karte“ zeigt jedes Foto mit GPS-Daten auf einer OpenStreetMap-Karte – gruppiert, mit Vorschaubildern und ohne zweiten Login.</p>
+      <span class="eyebrow">Browser extension · Chrome &amp; Edge</span>
+      <h1>All your geotagged photos on one map</h1>
+      <p class="lead">The Synology Photos apps have a map view – the web interface doesn’t. This extension adds it: one click on “Map” shows every photo with GPS data on an OpenStreetMap map – clustered, with thumbnails and without a second login.</p>
       <div class="actions">
-        <a class="btn primary" href="#installation">Installieren</a>
-        <a class="btn" href="https://github.com/mafi-code/maps-extension-for-synology-photos">Quellcode auf GitHub</a>
+        <a class="btn primary" href="#installation">Install</a>
+        <a class="btn" href="https://github.com/mafi-code/maps-extension-for-synology-photos">Source on GitHub</a>
       </div>
       <div class="frame">
-        <div class="frame-bar" aria-hidden="true"><span></span><span></span><span></span><em>Synology Photos · Kartenansicht</em></div>
-        <img src="screenshots/02-overview.webp" width="2560" height="1600" alt="Kartenansicht: Europa-Karte mit Foto-Gruppen, jede mit Vorschaubild und Anzahl der Fotos. Oben die Statuszeile „3.540 von 4.440 Fotos haben einen Standort“.">
+        <div class="frame-bar" aria-hidden="true"><span></span><span></span><span></span><em>Synology Photos · Map view</em></div>
+        <img src="screenshots/en/02-overview.webp" width="2560" height="1600" alt="Map view: map of Europe with photo clusters, each with a thumbnail and photo count. At the top the status line “3,540 of 4,440 photos have a location”.">
       </div>
     </div>
 
     <section id="screenshots">
       <div class="wrap">
-        <h2>So sieht es aus</h2>
-        <p class="section-lead">Alle Screenshots zeigen Demo-Daten: gezeichnete Beispielmotive an echten Reisezielen, keine echten Fotos.</p>
+        <h2>What it looks like</h2>
+        <p class="section-lead">All screenshots use demo data: generated sample scenes at real travel destinations, no real photos.</p>
         <div class="gallery">
           <figure>
-            <div class="frame"><img src="screenshots/01-button.webp" width="2560" height="1600" loading="lazy" decoding="async" alt="Foto-Übersicht mit einem blauen Button „Karte“ unten rechts."></div>
-            <figcaption><strong>Ein Button, sonst nichts.</strong> Unten rechts erscheint „Karte“ – die gewohnte Oberfläche bleibt unverändert.</figcaption>
+            <div class="frame"><img src="screenshots/en/01-button.webp" width="2560" height="1600" loading="lazy" decoding="async" alt="Photo library with a “Map” button at the bottom right."></div>
+            <figcaption><strong>One button, nothing else.</strong> “Map” appears at the bottom right – the familiar interface stays unchanged.</figcaption>
           </figure>
           <figure>
-            <div class="frame"><img src="screenshots/03-city.webp" width="2560" height="1600" loading="lazy" decoding="async" alt="Stadtkarte von Barcelona mit vielen kleinen Foto-Gruppen und Einzelfotos."></div>
-            <figcaption><strong>Reinzoomen bis auf Straßenebene.</strong> Gruppen teilen sich beim Zoomen auf; das neueste Foto ist jeweils das Titelbild.</figcaption>
+            <div class="frame"><img src="screenshots/en/03-city.webp" width="2560" height="1600" loading="lazy" decoding="async" alt="City map of Barcelona with many small photo clusters and single photos."></div>
+            <figcaption><strong>Zoom down to street level.</strong> Clusters split up as you zoom in; the newest photo is always the cover image.</figcaption>
           </figure>
           <figure class="wide">
-            <div class="frame"><img src="screenshots/04-popup.webp" width="2560" height="1600" loading="lazy" decoding="async" alt="Geöffnetes Foto auf der Karte mit großer Vorschau, Dateiname, Aufnahmedatum und Ort „Barcelona, Spanien“."></div>
-            <figcaption><strong>Klick auf ein Foto</strong> zeigt eine große Vorschau mit Dateiname, Aufnahmezeit und Ort.</figcaption>
+            <div class="frame"><img src="screenshots/en/04-popup.webp" width="2560" height="1600" loading="lazy" decoding="async" alt="Opened photo on the map with a large preview, file name, capture date and place “Barcelona, Spain”."></div>
+            <figcaption><strong>Click a photo</strong> for a large preview with file name, capture time and place.</figcaption>
           </figure>
         </div>
       </div>
     </section>
 
-    <section id="funktionen">
+    <section id="features">
       <div class="wrap">
-        <h2>Funktionen</h2>
-        <p class="section-lead">Gebaut für große Bibliotheken – getestet mit rund 70.000 Fotos.</p>
+        <h2>Features</h2>
+        <p class="section-lead">Built for large libraries – tested with around 70,000 photos.</p>
         <div class="features">
           <div class="card">
             <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
-            <h3>Kein zweiter Login</h3>
-            <p>Nutzt die bestehende Sitzung im Browser. Jeder sieht genau die Fotos, die er auch in Synology Photos sieht.</p>
+            <h3>No second login</h3>
+            <p>Uses the existing browser session. Everyone sees exactly the photos they can see in Synology Photos.</p>
           </div>
           <div class="card">
             <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="8" r="3"/><circle cx="17" cy="9" r="2"/><circle cx="10" cy="17" r="4"/></svg></div>
-            <h3>Gruppen mit Vorschau</h3>
-            <p>Nahe beieinander liegende Fotos werden zusammengefasst – mit Titelbild und Anzahl.</p>
+            <h3>Clusters with previews</h3>
+            <p>Photos close to each other are grouped – with a cover image and a count.</p>
           </div>
           <div class="card">
             <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M12 7v5l3 2"/></svg></div>
-            <h3>30-Tage-Cache</h3>
-            <p>Standorte und Vorschaubilder bleiben 30 Tage gespeichert – die Karte ist beim nächsten Öffnen sofort da.</p>
+            <h3>30-day cache</h3>
+            <p>Locations and thumbnails are kept for 30 days – the map is there instantly the next time you open it.</p>
           </div>
           <div class="card">
             <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10"/></svg></div>
-            <h3>Persönlich &amp; geteilt</h3>
-            <p>Lädt den persönlichen Bereich und – falls vorhanden – den geteilten Bereich.</p>
+            <h3>Personal &amp; shared</h3>
+            <p>Loads the personal space and – if available – the shared space.</p>
           </div>
           <div class="card">
             <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/></svg></div>
-            <h3>Minimale Rechte</h3>
-            <p>Zugriff nur auf die NAS-Adresse, für die die Erweiterung aktiviert wurde – jederzeit widerrufbar.</p>
+            <h3>Minimal permissions</h3>
+            <p>Access only to the NAS address you enabled the extension for – revocable at any time.</p>
           </div>
           <div class="card">
             <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L2.4 17.5A2 2 0 0 0 4.1 20.5h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div>
-            <h3>Robustes Laden</h3>
-            <p>Fehlgeschlagene Anfragen werden wiederholt; ein unvollständiger Stand wird angezeigt, aber nie gespeichert.</p>
+            <h3>Robust loading</h3>
+            <p>Failed requests are retried; an incomplete result is shown, but never cached.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="funktionsweise">
+    <section id="how-it-works">
       <div class="wrap">
-        <h2>Funktionsweise</h2>
-        <p class="section-lead">Die Erweiterung läuft komplett im Browser. Es gibt keinen eigenen Server – Daten fließen nur zwischen Browser, NAS und den Kartenkacheln von OpenStreetMap.</p>
+        <h2>How it works</h2>
+        <p class="section-lead">The extension runs entirely in the browser. There is no server of its own – data only flows between the browser, your NAS and the OpenStreetMap tile servers.</p>
 
-        <div class="arch" role="img" aria-label="Architektur: Im Synology-Photos-Tab laufen page-hook.js und content.js, die Karte läuft in einem Erweiterungs-iframe; content.js spricht mit der Synology-Photos-API und OpenStreetMap.">
+        <div class="arch" role="img" aria-label="Architecture: page-hook.js and content.js run in the Synology Photos tab, the map runs in an extension iframe; content.js talks to the Synology Photos API and OpenStreetMap.">
           <div class="zone">
             <div class="zone-title">Tab: Synology Photos</div>
-            <div class="node"><b>page-hook.js</b><span class="tag">MAIN world</span><p>Liest beim Seitenstart mit, welchen Session-Token (SynoToken) und API-Pfad die App selbst verwendet.</p></div>
-            <div class="node"><b>content.js</b><span class="tag">isolated</span><p>Button &amp; Overlay, lädt Fotos seitenweise, holt Vorschaubilder und Kartenkacheln.</p></div>
+            <div class="node"><b>page-hook.js</b><span class="tag">MAIN world</span><p>Picks up the session token (SynoToken) and API path the app itself uses when the page starts.</p></div>
+            <div class="node"><b>content.js</b><span class="tag">isolated</span><p>Button &amp; overlay, loads photos page by page, fetches thumbnails and map tiles.</p></div>
           </div>
           <div class="zone">
-            <div class="zone-title">Erweiterungs-iframe</div>
-            <div class="node"><b>map.html / map.js</b><p>Leaflet-Karte mit Marker-Clustern. Bekommt Fotos, Vorschaubilder und Kacheln per <code>postMessage</code>.</p></div>
-            <div class="node"><b>IndexedDB</b><p>30-Tage-Cache für Standorte (pro NAS und Benutzer) und Vorschaubilder.</p></div>
-            <div class="node"><b>popup.js</b><p>Schaltet die Erweiterung pro NAS-Adresse frei und registriert die Skripte.</p></div>
+            <div class="zone-title">Extension iframe</div>
+            <div class="node"><b>map.html / map.js</b><p>Leaflet map with marker clusters. Receives photos, thumbnails and tiles via <code>postMessage</code>.</p></div>
+            <div class="node"><b>IndexedDB</b><p>30-day cache for locations (per NAS and user) and thumbnails.</p></div>
+            <div class="node"><b>popup.js</b><p>Enables the extension per NAS address and registers the scripts.</p></div>
           </div>
           <div class="zone">
-            <div class="zone-title">Extern</div>
-            <div class="node ext"><b>Synology Photos Web API</b><p>Auf der eigenen NAS: Fotoliste mit GPS, Vorschaubilder, Benutzerkennung.</p></div>
-            <div class="node ext"><b>OpenStreetMap</b><p>Kartenkacheln. Geladen über content.js, damit die NAS-Adresse als Referer mitgeht.</p></div>
+            <div class="zone-title">External</div>
+            <div class="node ext"><b>Synology Photos Web API</b><p>On your own NAS: photo list with GPS, thumbnails, user ID.</p></div>
+            <div class="node ext"><b>OpenStreetMap</b><p>Map tiles. Loaded through content.js so the NAS address is sent as Referer.</p></div>
           </div>
         </div>
 
         <ol class="flow">
-          <li><div><strong>Freischalten:</strong> Im Popup wird Zugriff auf genau eine NAS-Adresse erteilt; die Content-Scripts werden dynamisch nur dafür registriert.</div></li>
-          <li><div><strong>Mitlesen:</strong> <code>page-hook.js</code> merkt sich Token und API-Pfad aus den Anfragen der Synology-App – so sind keine Zugangsdaten nötig.</div></li>
-          <li><div><strong>Laden:</strong> <code>content.js</code> holt die Fotoliste in Seiten zu 500 Einträgen (mit Wiederholungen bei Fehlern) und filtert alle Fotos mit GPS-Daten heraus.</div></li>
-          <li><div><strong>Anzeigen:</strong> Die Karte im iframe gruppiert die Fotos und fordert nur Vorschaubilder für den sichtbaren Ausschnitt an.</div></li>
-          <li><div><strong>Merken:</strong> Vollständig geladene Standorte und angesehene Vorschaubilder landen 30 Tage im Cache.</div></li>
+          <li><div><strong>Enable:</strong> the popup grants access to exactly one NAS address; the content scripts are registered dynamically for that address only.</div></li>
+          <li><div><strong>Pick up:</strong> <code>page-hook.js</code> remembers token and API path from the Synology app’s own requests – no credentials needed.</div></li>
+          <li><div><strong>Load:</strong> <code>content.js</code> fetches the photo list in pages of 500 entries (with retries on errors) and keeps every photo with GPS data.</div></li>
+          <li><div><strong>Show:</strong> the map in the iframe clusters the photos and only requests thumbnails for the visible area.</div></li>
+          <li><div><strong>Remember:</strong> completely loaded locations and viewed thumbnails are cached for 30 days.</div></li>
         </ol>
       </div>
     </section>
@@ -281,37 +284,38 @@
     <section id="stack">
       <div class="wrap">
         <h2>Stack</h2>
-        <p class="section-lead">Bewusst schlank: reines JavaScript ohne Build-Schritt und ohne npm-Abhängigkeiten. Der Ordner kann direkt als Erweiterung geladen werden.</p>
+        <p class="section-lead">Deliberately lean: plain JavaScript without a build step and without npm dependencies. The folder can be loaded as an extension directly.</p>
         <div class="table-wrap">
           <table>
-            <thead><tr><th scope="col">Bereich</th><th scope="col">Technik</th><th scope="col">Details</th></tr></thead>
+            <thead><tr><th scope="col">Area</th><th scope="col">Technology</th><th scope="col">Details</th></tr></thead>
             <tbody>
-              <tr><td>Plattform</td><td>Chrome-Erweiterung, Manifest V3</td><td>Chrome und Edge ab Version 111</td></tr>
-              <tr><td>Sprache</td><td>JavaScript, HTML, CSS</td><td>Kein Framework, kein Bundler, kein Build-Schritt</td></tr>
-              <tr><td>Karte</td><td>Leaflet 1.9.4 + Leaflet.markercluster 1.5.3</td><td>Lokal mitgeliefert in <code>vendor/</code> (BSD-2 bzw. MIT)</td></tr>
-              <tr><td>Kartendaten</td><td>OpenStreetMap-Kacheln</td><td>Über das Content-Script geladen, damit OpenStreetMap einen Referer erhält</td></tr>
-              <tr><td>Datenquelle</td><td>Synology Photos Web API</td><td>Inoffiziell: <code>SYNO.Foto.Browse.Item</code>, <code>SYNO.Foto.Thumbnail</code>, <code>SYNO.Foto.UserInfo</code>, <code>SYNO.FotoTeam.*</code></td></tr>
-              <tr><td>Anmeldung</td><td>Bestehende Browser-Sitzung</td><td>Session-Cookie + <code>X-SYNO-TOKEN</code> (CSRF-Token der App)</td></tr>
-              <tr><td>Skripte</td><td><code>chrome.scripting.registerContentScripts</code></td><td>Dynamisch pro NAS; <code>page-hook.js</code> in der MAIN world, <code>content.js</code> isoliert</td></tr>
-              <tr><td>Berechtigungen</td><td><code>scripting</code>, <code>activeTab</code>, <code>optional_host_permissions</code></td><td>Host-Zugriff nur nach Freigabe im Popup</td></tr>
-              <tr><td>Kommunikation</td><td><code>window.postMessage</code></td><td>Content-Script ⇄ Karten-iframe; Absender und Herkunft werden geprüft</td></tr>
-              <tr><td>Cache</td><td>IndexedDB (Erweiterungs-Origin)</td><td>Standorte pro NAS + Benutzer, Vorschaubilder klein/mittel, 30 Tage gültig</td></tr>
-              <tr><td>Tests</td><td>Node.js + Edge headless über das DevTools-Protokoll</td><td>End-to-End gegen eine simulierte Synology Photos; dieselbe Technik erzeugt Screenshots und Icons</td></tr>
+              <tr><td>Platform</td><td>Chrome extension, Manifest V3</td><td>Chrome and Edge 111 or later</td></tr>
+              <tr><td>Language</td><td>JavaScript, HTML, CSS</td><td>No framework, no bundler, no build step</td></tr>
+              <tr><td>Map</td><td>Leaflet 1.9.4 + Leaflet.markercluster 1.5.3</td><td>Bundled locally in <code>vendor/</code> (BSD-2 and MIT)</td></tr>
+              <tr><td>Map data</td><td>OpenStreetMap tiles</td><td>Loaded through the content script so OpenStreetMap receives a Referer</td></tr>
+              <tr><td>Data source</td><td>Synology Photos Web API</td><td>Unofficial: <code>SYNO.Foto.Browse.Item</code>, <code>SYNO.Foto.Thumbnail</code>, <code>SYNO.Foto.UserInfo</code>, <code>SYNO.FotoTeam.*</code></td></tr>
+              <tr><td>Sign-in</td><td>Existing browser session</td><td>Session cookie + <code>X-SYNO-TOKEN</code> (the app’s CSRF token)</td></tr>
+              <tr><td>Scripts</td><td><code>chrome.scripting.registerContentScripts</code></td><td>Dynamic per NAS; <code>page-hook.js</code> in the MAIN world, <code>content.js</code> isolated</td></tr>
+              <tr><td>Permissions</td><td><code>scripting</code>, <code>activeTab</code>, <code>storage</code>, <code>optional_host_permissions</code></td><td>Host access only after enabling it in the popup; <code>storage</code> only for the colour mode</td></tr>
+              <tr><td>Languages</td><td><code>chrome.i18n</code> with <code>_locales/</code></td><td>English and German – automatically from the browser language or chosen in the popup</td></tr>
+              <tr><td>Messaging</td><td><code>window.postMessage</code></td><td>Content script ⇄ map iframe; sender and origin are checked</td></tr>
+              <tr><td>Cache</td><td>IndexedDB (extension origin)</td><td>Locations per NAS + user, small/medium thumbnails, valid for 30 days</td></tr>
+              <tr><td>Tests</td><td>Node.js + headless Edge via the DevTools protocol</td><td>End-to-end against a simulated Synology Photos; the same technique renders screenshots and icons</td></tr>
             </tbody>
           </table>
         </div>
       </div>
     </section>
 
-    <section id="datenschutz">
+    <section id="privacy">
       <div class="wrap">
-        <h2>Datenschutz &amp; Sicherheit</h2>
+        <h2>Privacy &amp; security</h2>
         <ul class="plain">
-          <li>Kein eigener Server, kein Tracking. Fotos und Standorte verlassen nie die Verbindung zwischen Browser und NAS.</li>
-          <li>Einzige externe Anfrage: Kartenkacheln von OpenStreetMap – dabei wird nur die NAS-Adresse als Referer übertragen.</li>
-          <li>Der Cache liegt in der Datenbank der Erweiterung im Browserprofil; die Synology-Seite selbst kann ihn nicht lesen.</li>
-          <li>Die Karte antwortet nur Seiten, für die die Erweiterung freigeschaltet ist – fremde Webseiten können sie nicht auslesen.</li>
-          <li>„Cache leeren“ im Popup löscht alle gespeicherten Daten sofort.</li>
+          <li>No server of its own, no tracking. Photos and locations never leave the connection between browser and NAS.</li>
+          <li>The only external requests: map tiles from OpenStreetMap – only the NAS address is sent as Referer.</li>
+          <li>The cache lives in the extension’s database in the browser profile; the Synology page itself can’t read it.</li>
+          <li>The map only answers pages the extension is enabled for – other websites can’t read it.</li>
+          <li>“Clear cache” in the popup deletes all stored data immediately.</li>
         </ul>
       </div>
     </section>
@@ -320,19 +324,19 @@
       <div class="wrap install">
         <div>
           <h2>Installation</h2>
-          <p class="section-lead">Die Erweiterung ist (noch) nicht im Chrome Web Store und wird als entpackte Erweiterung geladen.</p>
+          <p class="section-lead">The extension is not in the Chrome Web Store (yet) and is loaded as an unpacked extension.</p>
           <ol class="steps">
-            <li>Repository herunterladen: <a href="https://github.com/mafi-code/maps-extension-for-synology-photos/archive/refs/heads/main.zip">ZIP-Datei</a> entpacken oder klonen.</li>
-            <li><code>chrome://extensions</code> bzw. <code>edge://extensions</code> öffnen und den <strong>Entwicklermodus</strong> einschalten.</li>
-            <li><strong>Entpackte Erweiterung laden</strong> und den entpackten Ordner auswählen.</li>
-            <li>Synology Photos im Browser öffnen und anmelden.</li>
-            <li>Auf das Erweiterungs-Symbol klicken → <strong>Für diese Adresse aktivieren</strong> → Zugriff erlauben.</li>
-            <li>Die Seite lädt neu – unten rechts erscheint der Button <strong>Karte</strong>.</li>
+            <li>Download the repository: unpack the <a href="https://github.com/mafi-code/maps-extension-for-synology-photos/archive/refs/heads/main.zip">ZIP file</a> or clone it.</li>
+            <li>Open <code>chrome://extensions</code> or <code>edge://extensions</code> and turn on <strong>Developer mode</strong>.</li>
+            <li>Click <strong>Load unpacked</strong> and select the unpacked folder.</li>
+            <li>Open Synology Photos in the browser and sign in.</li>
+            <li>Click the extension icon → <strong>Enable for this address</strong> → allow access.</li>
+            <li>The page reloads – the <strong>Map</strong> button appears at the bottom right.</li>
           </ol>
         </div>
         <figure class="popup-shot">
-          <div class="frame"><img src="screenshots/05-popup-ui.webp" width="624" height="538" loading="lazy" decoding="async" alt="Popup der Erweiterung: NAS-Adresse, Status „Aktiv“ und die Buttons „Karte öffnen“, „Cache leeren“ und „Deaktivieren“."></div>
-          <figcaption>Das Popup: aktivieren, Karte öffnen, Cache leeren.</figcaption>
+          <div class="frame"><img src="screenshots/en/05-popup-ui.webp" width="624" height="706" loading="lazy" decoding="async" alt="Extension popup: NAS address, status “Active”, the buttons “Open map”, “Clear cache” and “Disable”, the language selector (Auto / EN / DE) and the “Black &amp; white” switch."></div>
+          <figcaption>The popup: enable, open the map, clear the cache, language, black &amp; white mode.</figcaption>
         </figure>
       </div>
     </section>
@@ -340,8 +344,8 @@
 
   <footer>
     <div class="wrap">
-      <p>Inoffizielles Open-Source-Projekt – nicht mit Synology Inc. verbunden. „Synology“ und „Synology Photos“ sind Marken der Synology Inc.</p>
-      <p>Kartendaten © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende · Karte mit <a href="https://leafletjs.com">Leaflet</a> · Screenshots mit Demo-Daten.</p>
+      <p>Unofficial open-source project under the <a href="https://github.com/mafi-code/maps-extension-for-synology-photos/blob/main/LICENSE">MIT license</a> – not affiliated with Synology Inc. “Synology” and “Synology Photos” are trademarks of Synology Inc.</p>
+      <p>Map data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors · Map by <a href="https://leafletjs.com">Leaflet</a> · Screenshots with demo data.</p>
     </div>
   </footer>
 </body>

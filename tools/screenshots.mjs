@@ -1,4 +1,4 @@
-// Regenerates docs/screenshots/*.webp with synthetic demo data (no real photos).
+// Regenerates docs/screenshots/<lang>/*.webp (en + de) with synthetic demo data (no real photos).
 // Usage: npm run screenshots [-- <outputDir>]
 import fs from 'node:fs';
 import path from 'node:path';
@@ -9,7 +9,10 @@ const OUT = path.resolve(process.argv[2] || path.join(ROOT, 'docs', 'screenshots
 const PORT = 8766;
 const W = 1280;
 const H = 800;
-fs.mkdirSync(OUT, { recursive: true });
+const LANGS = [
+  { lang: 'en', locale: 'en-US', page: { photos: 'Photos', subtitle: 'Demo photo library with sample data', month: 'June 2024' } },
+  { lang: 'de', locale: 'de-DE', page: { photos: 'Fotos', subtitle: 'Demo-Fotobibliothek mit Beispieldaten', month: 'Juni 2024' } },
+];
 
 // ---------- deterministic demo data ----------
 let seed = 42;
@@ -56,7 +59,7 @@ for (const [city, country, lat, lng, count, spread, motif] of PLACES) {
       additional: {
         thumbnail: { cache_key: `${id}_${ts}`, unit_id: id, sm: 'ready', m: 'ready', xl: 'ready' },
         gps: { latitude: lat + (rnd() - 0.5) * spread * 2, longitude: lng + (rnd() - 0.5) * spread * 3 },
-        address: { city, country },
+        address: { city, country, de: { city, country } },
       },
     });
   }
@@ -67,11 +70,28 @@ for (let i = 0; i < 900; i++) { // photos without location exist in every librar
     additional: { thumbnail: { cache_key: `${id}_1`, unit_id: id, sm: 'ready', m: 'ready', xl: 'ready' } } });
 }
 
+// Place names as the NAS would deliver them in the respective language.
+const EN_NAMES = {
+  Lissabon: 'Lisbon', Rom: 'Rome', Florenz: 'Florence', München: 'Munich', Wien: 'Vienna', Kopenhagen: 'Copenhagen',
+  Spanien: 'Spain', Italien: 'Italy', Frankreich: 'France', Deutschland: 'Germany', Schweiz: 'Switzerland',
+  Österreich: 'Austria', Niederlande: 'Netherlands', Dänemark: 'Denmark', Kroatien: 'Croatia',
+  Griechenland: 'Greece', Norwegen: 'Norway',
+};
+function localizeAddresses(lang) {
+  for (const it of items) {
+    const a = it.additional.address;
+    if (!a) continue;
+    a.city = lang === 'en' ? (EN_NAMES[a.de.city] || a.de.city) : a.de.city;
+    a.country = lang === 'en' ? (EN_NAMES[a.de.country] || a.de.country) : a.de.country;
+  }
+}
+
 // ---------- photo-like demo images (tools/demo-photos.mjs) ----------
 const scene = (id, size) => renderScene(motifs.get(id) || { theme: 'city' }, id, size === 'xl' ? 640 : 240);
 
 // Neutral demo photo grid – deliberately not a copy of the Synology UI.
-const page = () => `<!doctype html><html lang="de"><head><meta charset="utf-8"><title>Fotos – Demo</title>
+let pageText = LANGS[0].page;
+const page = () => `<!doctype html><html><head><meta charset="utf-8"><title>${pageText.photos} – Demo</title>
 <style>
   body{margin:0;font:14px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;color:#1f2329;background:#f6f7f9}
   header{display:flex;align-items:center;gap:12px;height:56px;padding:0 24px;background:#fff;border-bottom:1px solid #e3e6ea}
@@ -80,23 +100,33 @@ const page = () => `<!doctype html><html lang="de"><head><meta charset="utf-8"><
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:4px}
   .grid img{width:100%;aspect-ratio:1;object-fit:cover;display:block;border-radius:2px}
 </style></head><body>
-<header><b>Fotos</b><span>Demo-Fotobibliothek mit Beispieldaten</span></header>
-<main><h2>Juni 2024</h2><div class="grid">${items.filter((_, i) => i % 67 === 5).slice(0, 48).map((it) => `<img src="/thumb/${it.id}" alt="">`).join('')}</div></main>
+<header><b>${pageText.photos}</b><span>${pageText.subtitle}</span></header>
+<main><h2>${pageText.month}</h2><div class="grid">${items.filter((_, i) => i % 67 === 5).slice(0, 48).map((it) => `<img src="/thumb/${it.id}" alt="">`).join('')}</div></main>
 </body></html>`;
 
 // ---------- capture ----------
 const mock = createMockSynology({ items, thumb: scene, page });
 await mock.listen(PORT);
-const cdp = await launchBrowser({ extDir: makeTestExtension({ demoHook: true }), port: PORT + 1000 });
+const extDir = makeTestExtension({ demoHook: true });
 
-const shot = async (name, sessionId, clip) => {
-  const r = await cdp.send('Page.captureScreenshot', { format: 'webp', quality: 88, ...(clip ? { clip } : {}) }, sessionId);
-  const file = path.join(OUT, `${name}.webp`);
-  fs.writeFileSync(file, Buffer.from(r.data, 'base64'));
-  console.log(`  ${path.relative(ROOT, file)}  ${Math.round(fs.statSync(file).size / 1024)} KB`);
-};
+async function capture({ lang, locale }, outDir, port) {
+  fs.mkdirSync(outDir, { recursive: true });
+  const cdp = await launchBrowser({ extDir, port, lang: locale });
+  const shot = async (name, sessionId, clip) => {
+    const r = await cdp.send('Page.captureScreenshot', { format: 'webp', quality: 88, ...(clip ? { clip } : {}) }, sessionId);
+    const file = path.join(outDir, `${name}.webp`);
+    fs.writeFileSync(file, Buffer.from(r.data, 'base64'));
+    console.log(`  ${path.relative(ROOT, file)}  ${Math.round(fs.statSync(file).size / 1024)} KB`);
+  };
+  console.log(`[${lang}]`);
+  try {
+    await capturePages(cdp, shot);
+  } finally {
+    await cdp.close();
+  }
+}
 
-try {
+async function capturePages(cdp, shot) {
   const pageSession = await cdp.openPage(`http://127.0.0.1:${PORT}/photo/`, { width: W, height: H, scale: 2 });
   await waitFor(() => cdp.evaluate(pageSession, `!!document.querySelector('.spm-launcher')`).catch(() => false));
   await sleep(1500); // let the grid thumbnails paint
@@ -104,7 +134,7 @@ try {
 
   await cdp.evaluate(pageSession, `document.querySelector('.spm-launcher').click()`);
   const frame = await cdp.findMapFrame();
-  await waitFor(() => cdp.evaluate(pageSession, `/haben einen Standort|Cache/.test(document.querySelector('.spm-status').textContent)`));
+  await waitFor(() => cdp.evaluate(pageSession, `document.querySelector('.spm-status').dataset.state === 'done'`));
   const onMap = (expr) => cdp.evaluate(frame.sessionId, expr);
 
   // wait until every marker is on the map, then count as "user moved the map"
@@ -149,7 +179,14 @@ try {
   await sleep(300);
   const h = await cdp.evaluate(popup, `Math.ceil(document.body.getBoundingClientRect().height)`);
   await shot('05-popup-ui', popup, { x: 0, y: 0, width: 312, height: h, scale: 1 });
+}
+
+try {
+  for (const [i, l] of LANGS.entries()) {
+    pageText = l.page;
+    localizeAddresses(l.lang);
+    await capture(l, path.join(OUT, l.lang), PORT + 1000 + i);
+  }
 } finally {
-  await cdp.close();
   await mock.close();
 }

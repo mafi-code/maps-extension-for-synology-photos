@@ -1,92 +1,104 @@
-![Kartenansicht für Synology Photos](docs/banner.png)
+![Map View for Synology Photos](docs/banner.png)
 
-# Synology Photos – Kartenansicht (Browser-Erweiterung)
+**English** · [Deutsch](README.de.md)
 
-Ergänzt die Weboberfläche von Synology Photos um eine Karte mit allen Fotos, die GPS-Daten haben –
-wie in der Android-/iPhone-App. Funktioniert in Chrome und Edge (ab Version 111).
+# Map View for Synology Photos (browser extension)
 
-![Kartenansicht mit Foto-Gruppen über Europa (Demo-Daten)](docs/screenshots/02-overview.webp)
+Adds a map with all geotagged photos to the Synology Photos web interface – like the map in the
+Android/iPhone app. Works in Chrome and Edge (version 111 or later).
+The interface is in English or German – automatically from the browser language, or chosen in the popup.
 
-**Projektseite mit Screenshots, Funktionsweise und Stack:** [docs/index.html](docs/index.html)
-(über GitHub Pages: https://mafi-code.github.io/maps-extension-for-synology-photos/)
+![Map view with photo clusters across Europe (demo data)](docs/screenshots/en/02-overview.webp)
+
+**Project page with screenshots, architecture and stack:** [docs/index.html](docs/index.html)
+(via GitHub Pages: https://mafi-code.github.io/maps-extension-for-synology-photos/)
 
 ## Screenshots
 
-Alle Screenshots zeigen Demo-Daten (gezeichnete Beispielmotive an echten Reisezielen), keine echten Fotos.
+All screenshots use demo data (generated sample scenes at real travel destinations), no real photos.
 
 | | |
 |---|---|
-| ![Foto-Übersicht mit dem Button „Karte“ unten rechts](docs/screenshots/01-button.webp) | ![Stadtkarte von Barcelona mit Foto-Gruppen und Einzelfotos](docs/screenshots/03-city.webp) |
-| **Ein Button:** unten rechts erscheint „Karte“. | **Bis auf Straßenebene:** Gruppen teilen sich beim Zoomen auf. |
+| ![Photo library with the “Map” button at the bottom right](docs/screenshots/en/01-button.webp) | ![City map of Barcelona with photo clusters and single photos](docs/screenshots/en/03-city.webp) |
+| **One button:** “Map” appears at the bottom right. | **Down to street level:** clusters split up as you zoom in. |
 
-![Geöffnetes Foto mit großer Vorschau, Dateiname, Datum und Ort](docs/screenshots/04-popup.webp)
-**Klick auf ein Foto** zeigt eine große Vorschau mit Dateiname, Aufnahmezeit und Ort.
+![Opened photo with large preview, file name, date and place](docs/screenshots/en/04-popup.webp)
+**Click a photo** for a large preview with file name, capture time and place.
 
-<img src="docs/screenshots/05-popup-ui.webp" width="312" alt="Popup der Erweiterung mit „Karte öffnen“, „Cache leeren“ und „Deaktivieren“">
+<img src="docs/screenshots/en/05-popup-ui.webp" width="312" alt="Extension popup with “Open map”, “Clear cache” and “Disable”">
 
-**Das Popup:** pro NAS-Adresse aktivieren, Karte öffnen, Cache leeren.
+**The popup:** enable per NAS address, open the map, clear the cache, language (Auto / EN / DE), black & white mode.
 
 ## Installation
 
-1. `chrome://extensions` (bzw. `edge://extensions`) öffnen.
-2. **Entwicklermodus** einschalten.
-3. **Entpackte Erweiterung laden** → diesen Ordner `synology-photos-map` auswählen.
-4. Synology Photos im Browser öffnen und anmelden.
-5. Auf das Erweiterungs-Symbol klicken → **Für diese Adresse aktivieren** → Zugriff erlauben.
-   Die Seite lädt neu, unten rechts erscheint der Button **Karte**.
+1. Open `chrome://extensions` (or `edge://extensions`).
+2. Turn on **Developer mode**.
+3. **Load unpacked** → select the folder of this repository.
+4. Open Synology Photos in the browser and sign in.
+5. Click the extension icon → **Enable for this address** → allow access.
+   The page reloads and the **Map** button appears at the bottom right.
 
-Die Erweiterung bekommt nur Zugriff auf die eine NAS-Adresse, für die sie aktiviert wurde.
-Über das Symbol lässt sie sich jederzeit wieder deaktivieren.
+The extension only gets access to the one NAS address you enable it for.
+You can disable it again at any time via the icon.
 
-## So funktioniert es
+## How it works
 
-- Nutzt die bestehende Anmeldung im Browser – kein zweites Passwort, gleiche Rechte wie in Synology Photos.
-- Lädt persönlichen und (falls vorhanden) geteilten Bereich über die Synology-Photos-Web-API.
-- Karte: OpenStreetMap, Fotos werden zu Gruppen zusammengefasst; Klick auf ein Foto zeigt eine größere Vorschau.
-- Die Kartenkacheln lädt das Skript auf der Synology-Seite (OpenStreetMap verlangt einen Referer,
-  den die Erweiterungsseite selbst nicht sendet). Dabei geht nur die NAS-Adresse als Referer an OpenStreetMap,
-  sonst werden keine Daten an Dritte geschickt.
+- Uses your existing browser session – no second password, same permissions as in Synology Photos.
+- Loads the personal space and (if available) the shared space through the Synology Photos web API.
+- Map: OpenStreetMap; photos are grouped into clusters, clicking a photo shows a larger preview.
+- Map tiles are loaded by the script on the Synology page (OpenStreetMap requires a Referer, which the
+  extension page itself doesn’t send). Only the NAS address is sent to OpenStreetMap as Referer;
+  no other data goes to third parties.
 
-## Cache (30 Tage)
+## Cache (30 days)
 
-- **Standorte** werden pro NAS-Adresse **und pro Benutzer** 30 Tage gespeichert. Innerhalb dieser Zeit
-  erscheint die Karte sofort mit dem gespeicherten Stand; **„Neu laden“** holt aktuelle Daten und
-  startet die 30 Tage neu. Neue oder gelöschte Fotos sind erst nach „Neu laden“ sichtbar.
-- **Vorschaubilder** (klein/mittel) werden ebenfalls 30 Tage gespeichert. Bearbeitete Fotos bekommen
-  automatisch ein neues Vorschaubild.
-- Gespeichert wird in der Datenbank der Erweiterung im Browserprofil – die Synology-Seite kann sie nicht lesen.
-- Unvollständige Ladevorgänge werden nie gespeichert.
-- **„Cache leeren“** im Popup löscht alles sofort; abgelaufene Einträge werden automatisch entfernt.
+- **Locations** are stored for 30 days per NAS address **and per user**. Within that time the map
+  appears instantly with the stored state; **“Reload”** fetches current data and restarts the 30 days.
+  New or deleted photos only show up after “Reload”.
+- **Thumbnails** (small/medium) are stored for 30 days as well. Edited photos automatically get a new thumbnail.
+- Everything is stored in the extension’s database in the browser profile – the Synology page can’t read it.
+- Incomplete loads are never stored.
+- **“Clear cache”** in the popup deletes everything immediately; expired entries are removed automatically.
 
-## Wenn keine Fotos erscheinen
+## If no photos appear
 
-Die Synology-Photos-API ist nicht offiziell dokumentiert. Findet die Erweiterung keine GPS-Daten,
-zeigt sie einen gelben **Diagnose**-Kasten. Diesen Text kopieren und weitergeben – daran lässt sich
-erkennen, in welchem Feld die NAS die Koordinaten liefert. Zusätzliche Infos stehen in der
-Browser-Konsole (F12) unter `[Kartenansicht]`.
+The Synology Photos API isn’t officially documented. If the extension finds no GPS data, it shows a
+**Diagnostics** box. Copy that text and pass it on – it shows in which field the NAS delivers the
+coordinates. More details are in the browser console (F12), prefixed with `[Kartenansicht]`.
 
-## Entwicklung
+## Development
 
-Kein Build-Schritt und keine npm-Abhängigkeiten. Für die Werkzeuge in `tools/` werden Node.js ab 22
-und Microsoft Edge gebraucht (Google Chrome lädt seit Version 137 keine Erweiterungen per Kommandozeile mehr).
+No build step and no npm dependencies. The tools in `tools/` need Node.js 22+ and Microsoft Edge
+(Google Chrome no longer loads extensions from the command line since version 137).
 
-| Befehl | Zweck |
+| Command | Purpose |
 |---|---|
-| `npm test` | End-to-End-Test gegen eine simulierte Synology Photos (erstes Laden, Cache, 70.000 Fotos mit NAS-Aussetzer) |
-| `npm run screenshots` | erzeugt `docs/screenshots/*.webp` mit Demo-Daten neu |
-| `npm run logo` | rendert `assets/*.svg` zu den Icons in `icons/` sowie `docs/logo.png` und `docs/banner.png` |
+| `npm test` | End-to-end test against a simulated Synology Photos (first load, cache, 70,000 photos with a NAS hiccup, English UI) |
+| `npm run screenshots` | regenerates `docs/screenshots/{en,de}/*.webp` with demo data |
+| `npm run logo` | renders `assets/*.svg` to the icons in `icons/`, `docs/logo.png` and the banners |
 
-## Dateien
+UI texts live in `_locales/en/messages.json` and `_locales/de/messages.json`.
 
-| Datei | Zweck |
+## Files
+
+| File | Purpose |
 |---|---|
-| `manifest.json` | Erweiterungs-Definition |
-| `popup.html/js` | Aktivieren/Deaktivieren pro NAS-Adresse |
-| `page-hook.js` | liest Session-Token und API-Pfad der Synology-Photos-App mit |
-| `content.js/css` | Button, Overlay, Laden der Fotos und Vorschaubilder |
-| `map.html/js/css` | Karte (Leaflet) im Erweiterungs-iframe |
+| `manifest.json` | Extension definition |
+| `_locales/` | UI texts (English, German) |
+| `popup.html/js` | Enable/disable per NAS address, black & white mode |
+| `page-hook.js` | Picks up the session token and API path used by the Synology Photos app |
+| `content.js/css` | Button, overlay, loading photos, thumbnails and map tiles |
+| `map.html/js/css` | Map (Leaflet) in the extension iframe, cache |
 | `vendor/` | Leaflet 1.9.4, Leaflet.markercluster 1.5.3 |
-| `icons/` | Erweiterungs-Icons (aus `assets/` gerendert) |
-| `assets/` | Logo, kleines Icon und Banner als SVG-Quellen |
-| `tools/` | Test, Screenshots und Logo-Rendering (nicht Teil der Erweiterung) |
-| `docs/` | Projektseite für GitHub Pages |
+| `icons/` | Extension icons (rendered from `assets/`) |
+| `assets/` | Logo, small icon and banners as SVG sources |
+| `tools/` | Test, screenshots and logo rendering (not part of the extension) |
+| `docs/` | Project page for GitHub Pages (`index.html` English, `de.html` German) |
+
+## License
+
+[MIT](LICENSE) © mafi-code. The bundled libraries in `vendor/` keep their own licenses:
+Leaflet (BSD 2-Clause, [vendor/LICENSE-leaflet.txt](vendor/LICENSE-leaflet.txt)) and
+Leaflet.markercluster (MIT, [vendor/LICENSE-markercluster.txt](vendor/LICENSE-markercluster.txt)).
+
+Unofficial project, not affiliated with Synology Inc. “Synology” and “Synology Photos” are trademarks of Synology Inc.

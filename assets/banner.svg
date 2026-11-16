@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1200 360">
-  <title>Kartenansicht für Synology Photos – Banner</title>
+  <title>Map View for Synology Photos – Banner</title>
   <defs>
     <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#07051a"/>
@@ -53,12 +53,12 @@
 
   <!-- wordmark with chromatic glitch -->
   <g font-family="'Segoe UI Black','Arial Black','Helvetica Neue',Arial,sans-serif" font-weight="900" font-style="italic">
-    <text x="318" y="168" font-size="86" letter-spacing="2" fill="#ff2fb0" opacity="0.75" transform="translate(-4 2)">KARTENANSICHT</text>
-    <text x="318" y="168" font-size="86" letter-spacing="2" fill="#00e5ff" opacity="0.55" transform="translate(4 -2)">KARTENANSICHT</text>
-    <text x="318" y="168" font-size="86" letter-spacing="2" fill="url(#title)" filter="url(#glow)">KARTENANSICHT</text>
+    <text x="318" y="168" font-size="86" letter-spacing="2" fill="#ff2fb0" opacity="0.75" transform="translate(-4 2)">MAP VIEW</text>
+    <text x="318" y="168" font-size="86" letter-spacing="2" fill="#00e5ff" opacity="0.55" transform="translate(4 -2)">MAP VIEW</text>
+    <text x="318" y="168" font-size="86" letter-spacing="2" fill="url(#title)" filter="url(#glow)">MAP VIEW</text>
   </g>
   <text x="322" y="214" font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif" font-size="26" font-weight="600"
-        letter-spacing="9" fill="#ff5cc6" filter="url(#glowSoft)">FÜR SYNOLOGY PHOTOS</text>
+        letter-spacing="9" fill="#ff5cc6" filter="url(#glowSoft)">FOR SYNOLOGY PHOTOS</text>
   <text x="1148" y="214" text-anchor="end" font-family="'Cascadia Code',Consolas,monospace" font-size="15"
         letter-spacing="3" fill="#00e5ff" opacity="0.75">// GPS · MAP · CACHE</text>
 </svg>

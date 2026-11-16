@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1200 360">
+  <title>Kartenansicht für Synology Photos – Banner</title>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#07051a"/>
+      <stop offset="0.62" stop-color="#170b38"/>
+      <stop offset="1" stop-color="#07051a"/>
+    </linearGradient>
+    <radialGradient id="horizon" cx="600" cy="236" r="620" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ff2fb0" stop-opacity="0.42"/>
+      <stop offset="0.45" stop-color="#7b2cff" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#7b2cff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="gridFade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ff2fb0" stop-opacity="0.15"/>
+      <stop offset="1" stop-color="#ff2fb0" stop-opacity="0.7"/>
+    </linearGradient>
+    <linearGradient id="title" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#b8f7ff"/>
+      <stop offset="0.5" stop-color="#00e5ff"/>
+      <stop offset="1" stop-color="#0aa3d6"/>
+    </linearGradient>
+    <clipPath id="floor"><rect x="0" y="236" width="1200" height="124"/></clipPath>
+    <filter id="glow" x="-20%" y="-60%" width="140%" height="220%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="glowSoft" x="-20%" y="-60%" width="140%" height="220%">
+      <feGaussianBlur stdDeviation="2.5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="360" fill="url(#sky)"/>
+  <rect width="1200" height="360" fill="url(#horizon)"/>
+
+  <!-- stars -->
+  <g fill="#cfe9ff" opacity="0.7">
+    <circle cx="90" cy="40" r="1.2"/><circle cx="250" cy="90" r="1"/><circle cx="420" cy="30" r="1.4"/>
+    <circle cx="700" cy="60" r="1"/><circle cx="860" cy="28" r="1.3"/><circle cx="1010" cy="80" r="1"/>
+    <circle cx="1130" cy="36" r="1.2"/><circle cx="560" cy="110" r="0.9"/><circle cx="960" cy="150" r="0.9"/>
+  </g>
+
+  <!-- synthwave floor -->
+  <g clip-path="url(#floor)" fill="none" stroke="url(#gridFade)" stroke-width="1.6">
+    <path d="M0 244H1200M0 256H1200M0 272H1200M0 294H1200M0 324H1200M0 360H1200"/>
+    <path d="M600 236L-900 360M600 236L-500 360M600 236L-150 360M600 236L180 360M600 236L420 360M600 236L600 360M600 236L780 360M600 236L1020 360M600 236L1350 360M600 236L1700 360M600 236L2100 360"/>
+  </g>
+  <path d="M0 236H1200" stroke="#ff2fb0" stroke-width="2.5" filter="url(#glowSoft)"/>
+
+  <!-- logo mark -->
+  <image href="logo.svg" xlink:href="logo.svg" x="70" y="58" width="196" height="196"/>
+
+  <!-- wordmark with chromatic glitch -->
+  <g font-family="'Segoe UI Black','Arial Black','Helvetica Neue',Arial,sans-serif" font-weight="900" font-style="italic">
+    <text x="318" y="168" font-size="86" letter-spacing="2" fill="#ff2fb0" opacity="0.75" transform="translate(-4 2)">KARTENANSICHT</text>
+    <text x="318" y="168" font-size="86" letter-spacing="2" fill="#00e5ff" opacity="0.55" transform="translate(4 -2)">KARTENANSICHT</text>
+    <text x="318" y="168" font-size="86" letter-spacing="2" fill="url(#title)" filter="url(#glow)">KARTENANSICHT</text>
+  </g>
+  <text x="322" y="214" font-family="'Segoe UI','Helvetica Neue',Arial,sans-serif" font-size="26" font-weight="600"
+        letter-spacing="9" fill="#ff5cc6" filter="url(#glowSoft)">FÜR SYNOLOGY PHOTOS</text>
+  <text x="1148" y="214" text-anchor="end" font-family="'Cascadia Code',Consolas,monospace" font-size="15"
+        letter-spacing="3" fill="#00e5ff" opacity="0.75">// GPS · MAP · CACHE</text>
+</svg>
