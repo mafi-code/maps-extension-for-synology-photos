@@ -146,6 +146,12 @@
   "popupLangAuto": {
     "message": "Auto"
   },
+  "popupGithub": {
+    "message": "Source on GitHub"
+  },
+  "popupCreatedBy": {
+    "message": "Created by"
+  },
   "popupActive": {
     "message": "Active – the “Map” button appears at the bottom right in Synology Photos."
   },

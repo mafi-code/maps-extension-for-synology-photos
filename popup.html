@@ -221,6 +221,28 @@
       transition: transform 0.15s ease;
     }
     #theme-toggle[aria-checked="true"]::after { transform: translateX(18px); }
+
+    /* link to the repository */
+    .gh {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      font: 11px/1 var(--mono);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+    }
+    .gh svg { width: 14px; height: 14px; fill: currentColor; flex: none; }
+    .gh-name { font-weight: 600; text-transform: none; color: var(--text); }
+    .gh:hover .gh-name { color: var(--accent); }
+    .gh:hover { color: var(--accent); text-shadow: var(--glow); }
+    .gh:hover svg { filter: drop-shadow(0 0 4px color-mix(in srgb, var(--accent) 60%, transparent)); }
+    :root[data-theme="mono"] .gh:hover svg { filter: none; }
+    .gh:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
     @media (prefers-reduced-motion: reduce) { button, #theme-toggle::after { transition: none; } }
   </style>
 </head>
@@ -250,6 +272,11 @@
     <span id="theme-label" data-i18n="popupMono">Black &amp; white</span>
     <button id="theme-toggle" type="button" role="switch" aria-checked="false" aria-labelledby="theme-label"></button>
   </div>
+  <a class="gh" href="https://github.com/mafi-code/maps-extension-for-synology-photos" target="_blank" rel="noopener" data-i18n-title="popupGithub" title="Source on GitHub">
+    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+    <span data-i18n="popupCreatedBy">Created by</span>
+    <span class="gh-name">mafi-code</span>
+  </a>
   <script src="popup.js"></script>
 </body>
 </html>

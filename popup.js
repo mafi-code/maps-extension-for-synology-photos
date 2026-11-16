@@ -20,6 +20,7 @@ const msg = (key, ...subs) => {
 function applyI18n() {
   document.documentElement.lang = langPack ? langPack.lang : chrome.i18n.getUILanguage();
   document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = msg(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-title]').forEach((el) => { el.title = msg(el.dataset.i18nTitle); });
   if (stateKey) $('state').textContent = msg(stateKey);
   const current = langPack ? langPack.lang : 'auto';
   document.querySelectorAll('.seg [data-lang]').forEach((b) => b.setAttribute('aria-checked', String(b.dataset.lang === current)));

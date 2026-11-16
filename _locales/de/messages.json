@@ -146,6 +146,12 @@
   "popupLangAuto": {
     "message": "Auto"
   },
+  "popupGithub": {
+    "message": "Quellcode auf GitHub"
+  },
+  "popupCreatedBy": {
+    "message": "Erstellt von"
+  },
   "popupActive": {
     "message": "Aktiv – unten rechts erscheint in Synology Photos der Button „Karte“."
   },
