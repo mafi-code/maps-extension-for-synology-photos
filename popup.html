@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>Kartenansicht</title>
+  <style>
+    /* Cyberpunk – palette and design language of Marktplatz Hub (dashboard.css). */
+    :root {
+      color-scheme: dark;
+      accent-color: #00e5ff;
+      --bg: #070a12;
+      --bg-2: #0b1020;
+      --surface: #0e1424;
+      --surface-2: #111a2e;
+      --border: #1d2b46;
+      --border-glow: #1f4d63;
+      --text: #d7e6f5;
+      --text-2: #a3b6cf;
+      --muted: #6f83a0;
+      --emph: #ffffff;
+      --accent: #00e5ff;
+      --accent-soft: color-mix(in srgb, #00e5ff 10%, transparent);
+      --magenta: #ff2fb0;
+      --good: #38ffb3;
+      --bad: #ff3b5c;
+      --glow: 0 0 6px color-mix(in srgb, #00e5ff 55%, transparent), 0 0 18px color-mix(in srgb, #00e5ff 25%, transparent);
+      --glow-magenta: 0 0 6px color-mix(in srgb, #ff2fb0 55%, transparent), 0 0 18px color-mix(in srgb, #ff2fb0 25%, transparent);
+      --grid-line: color-mix(in srgb, #00e5ff 3.5%, transparent);
+      --bloom-1: color-mix(in srgb, #ff2fb0 12%, transparent);
+      --bloom-2: color-mix(in srgb, #00e5ff 12%, transparent);
+      --primary-bg: linear-gradient(135deg, color-mix(in srgb, #00e5ff 18%, transparent), color-mix(in srgb, #ff2fb0 18%, transparent));
+      --primary-text: color-mix(in srgb, #00e5ff 72%, #d7e6f5);
+      --logo-filter: drop-shadow(0 0 6px color-mix(in srgb, #00e5ff 40%, transparent));
+      --mono: "Cascadia Code", "Consolas", "JetBrains Mono", "Courier New", monospace;
+    }
+    /* Schwarz-Weiß – the dark "Klassisch" palette of Marktplatz Hub. */
+    :root[data-theme="mono"] {
+      accent-color: #f0efec;
+      --bg: #121211;
+      --bg-2: #121211;
+      --surface: #1a1a19;
+      --surface-2: #232321;
+      --border: #2f2f2c;
+      --border-glow: #3d3d39;
+      --text: #f0efec;
+      --text-2: #c3c2b7;
+      --muted: #8f8e86;
+      --emph: #f0efec;
+      --accent: #f0efec;
+      --accent-soft: rgba(240, 239, 236, 0.08);
+      --magenta: #f0efec;
+      --good: #f0efec;
+      --bad: #f0efec;
+      --glow: none;
+      --glow-magenta: none;
+      --grid-line: transparent;
+      --bloom-1: transparent;
+      --bloom-2: transparent;
+      --primary-bg: #f0efec;
+      --primary-text: #121211;
+      --logo-filter: grayscale(1) contrast(1.1);
+    }
+
+    body {
+      width: 288px;
+      margin: 0;
+      padding: 16px;
+      font: 13px/1.45 "Segoe UI", system-ui, sans-serif;
+      color: var(--text);
+      background-color: var(--bg);
+      background-image:
+        linear-gradient(var(--grid-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
+        radial-gradient(circle at 15% -10%, var(--bloom-1), transparent 45%),
+        radial-gradient(circle at 100% 0%, var(--bloom-2), transparent 40%);
+      background-size: 22px 22px, 22px 22px, 100% 100%, 100% 100%;
+    }
+    ::selection { background: var(--magenta); color: #ffffff; }
+
+    header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    header img { width: 40px; height: 40px; flex: none; filter: var(--logo-filter); }
+    h1 {
+      margin: 0;
+      font: 600 14px/1.2 var(--mono);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--emph);
+      text-shadow: var(--glow);
+    }
+    h1::before { content: "\258E"; margin-right: 4px; color: var(--magenta); text-shadow: var(--glow-magenta); }
+    #site {
+      margin: 3px 0 0;
+      font: 11.5px/1.3 var(--mono);
+      color: var(--muted);
+      word-break: break-all;
+    }
+    #site:not(:empty)::before { content: "\00BB\00A0"; color: var(--magenta); }
+
+    #state {
+      margin: 0 0 12px;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--magenta);
+      border-radius: 4px;
+      background: linear-gradient(180deg, var(--surface), var(--bg-2));
+      color: var(--text-2);
+      box-shadow: inset 6px 0 12px -6px color-mix(in srgb, var(--magenta) 45%, transparent);
+    }
+    #state.is-on {
+      border-left-color: var(--good);
+      box-shadow: inset 6px 0 12px -6px color-mix(in srgb, var(--good) 45%, transparent);
+    }
+    :root[data-theme="mono"] #state { box-shadow: none; }
+
+    button {
+      display: block;
+      width: 100%;
+      height: 34px;
+      margin-top: 8px;
+      border: 1px solid var(--border-glow);
+      border-radius: 4px;
+      background: var(--surface-2);
+      color: var(--text);
+      font: 600 12px/1 var(--mono);
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: border-color 0.15s, box-shadow 0.15s, color 0.15s;
+    }
+    button:hover { border-color: var(--accent); color: var(--accent); box-shadow: var(--glow); }
+    button.primary {
+      background: var(--primary-bg);
+      border-color: var(--accent);
+      color: var(--primary-text);
+      text-shadow: 0 0 8px color-mix(in srgb, var(--accent) 25%, transparent);
+    }
+    button.primary:hover { filter: brightness(1.15); color: var(--primary-text); }
+    #disable { color: var(--bad); }
+    #disable:hover { border-color: var(--bad); color: var(--bad); box-shadow: 0 0 6px color-mix(in srgb, var(--bad) 55%, transparent); }
+    button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    [hidden] { display: none !important; }
+
+    #hint {
+      margin: 12px 0 0;
+      padding: 7px 10px;
+      border: 1px solid var(--border);
+      border-left: 2px solid var(--magenta);
+      background: var(--bg-2);
+      font: 11.5px/1.4 var(--mono);
+      color: var(--text-2);
+    }
+    #hint:empty { display: none; }
+
+    /* theme switch */
+    .theme {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      font: 11px/1 var(--mono);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    #theme-toggle {
+      position: relative;
+      flex: none;
+      width: 38px;
+      height: 20px;
+      margin: 0;
+      padding: 0;
+      border: 1px solid var(--border-glow);
+      border-radius: 10px;
+      background: var(--bg-2);
+      box-shadow: none;
+    }
+    #theme-toggle:hover { border-color: var(--accent); box-shadow: var(--glow); }
+    #theme-toggle::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: var(--glow);
+      transition: transform 0.15s ease;
+    }
+    #theme-toggle[aria-checked="true"]::after { transform: translateX(18px); }
+    @media (prefers-reduced-motion: reduce) { button, #theme-toggle::after { transition: none; } }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="icons/icon48.png" alt="">
+    <div>
+      <h1>Kartenansicht</h1>
+      <p id="site"></p>
+    </div>
+  </header>
+  <p id="state"></p>
+  <button id="open" class="primary" hidden>Karte öffnen</button>
+  <button id="enable" class="primary" hidden>Für diese Adresse aktivieren</button>
+  <button id="clear">Cache leeren</button>
+  <button id="disable" hidden>Deaktivieren</button>
+  <p id="hint"></p>
+  <div class="theme">
+    <span id="theme-label">Schwarz-Weiß</span>
+    <button id="theme-toggle" type="button" role="switch" aria-checked="false" aria-labelledby="theme-label"></button>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

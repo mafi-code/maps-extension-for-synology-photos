@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kartenansicht für Synology Photos</title>
+  <meta name="description" content="Browser-Erweiterung für Chrome und Edge: zeigt alle Fotos mit GPS-Daten aus Synology Photos auf einer Karte – direkt in der Weboberfläche.">
+  <link rel="icon" type="image/png" href="logo.png">
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --surface: #ffffff;
+      --surface-2: #eef1f5;
+      --text: #1b2028;
+      --muted: #5b6573;
+      --border: #dde2e8;
+      --accent: #1e6fd9;
+      --accent-hover: #185bb3;
+      --accent-soft: #e3eefc;
+      --on-accent: #ffffff;
+      --shadow: 0 10px 30px rgba(20, 30, 50, 0.10), 0 2px 6px rgba(20, 30, 50, 0.06);
+      --radius: 14px;
+      --mono: ui-monospace, "Cascadia Code", Consolas, "SF Mono", monospace;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #0f1318;
+        --surface: #171c23;
+        --surface-2: #1f262f;
+        --text: #e7ebf0;
+        --muted: #9aa5b3;
+        --border: #2a323d;
+        --accent: #4d94f0;
+        --accent-hover: #6aa6f3;
+        --accent-soft: #1a2a40;
+        --on-accent: #0b1220;
+        --shadow: 0 10px 30px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.3);
+      }
+    }
+    :root[data-theme="dark"] {
+      --bg: #0f1318;
+      --surface: #171c23;
+      --surface-2: #1f262f;
+      --text: #e7ebf0;
+      --muted: #9aa5b3;
+      --border: #2a323d;
+      --accent: #4d94f0;
+      --accent-hover: #6aa6f3;
+      --accent-soft: #1a2a40;
+      --on-accent: #0b1220;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    }
+    img { max-width: 100%; height: auto; display: block; }
+    a { color: var(--accent); }
+    a:hover { color: var(--accent-hover); }
+    code { font-family: var(--mono); font-size: 0.88em; background: var(--surface-2); padding: 0.1em 0.4em; border-radius: 5px; overflow-wrap: anywhere; }
+
+    .wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+    @media (min-width: 720px) { .wrap { padding: 0 32px; } }
+
+    /* header */
+    .top { border-bottom: 1px solid var(--border); background: var(--surface); }
+    .top .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 60px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 650; color: var(--text); text-decoration: none; }
+    .brand img { width: 32px; height: 32px; flex: none; }
+    .top nav { display: flex; gap: 20px; font-size: 15px; }
+    .top nav a { color: var(--muted); text-decoration: none; }
+    .top nav a:hover { color: var(--text); }
+    @media (max-width: 640px) { .top nav { display: none; } }
+
+    /* hero */
+    .hero { padding-top: 56px; padding-bottom: 24px; text-align: center; }
+    .eyebrow { display: inline-block; font-size: 13px; font-weight: 600; letter-spacing: 0.02em; color: var(--accent); background: var(--accent-soft); padding: 4px 12px; border-radius: 999px; }
+    h1 { font-size: clamp(30px, 5vw, 48px); line-height: 1.12; margin: 18px auto 14px; max-width: 18ch; letter-spacing: -0.02em; }
+    .lead { font-size: clamp(17px, 2.2vw, 19px); color: var(--muted); max-width: 46rem; margin: 0 auto; }
+    .actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin: 28px 0 40px; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 20px; border-radius: 10px; font-weight: 600; font-size: 15px; text-decoration: none; border: 1px solid var(--border); background: var(--surface); color: var(--text); }
+    .btn:hover { color: var(--text); border-color: var(--muted); }
+    .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+    .btn.primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: var(--on-accent); }
+    .btn:focus-visible, .top a:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+    /* browser frame */
+    .frame { border-radius: var(--radius); overflow: hidden; background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow); }
+    .frame-bar { display: flex; align-items: center; gap: 6px; height: 34px; padding: 0 14px; background: var(--surface-2); border-bottom: 1px solid var(--border); }
+    .frame-bar span { width: 10px; height: 10px; border-radius: 50%; background: var(--border); }
+    .frame-bar em { margin-left: 12px; font-style: normal; font-size: 12px; color: var(--muted); font-family: var(--mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* sections */
+    section { padding: 56px 0; }
+    section + section { border-top: 1px solid var(--border); }
+    h2 { font-size: clamp(24px, 3.4vw, 32px); line-height: 1.2; margin: 0 0 8px; letter-spacing: -0.01em; }
+    .section-lead { color: var(--muted); margin: 0 0 32px; max-width: 46rem; }
+    h3 { font-size: 18px; margin: 0 0 6px; }
+
+    /* gallery */
+    .gallery { display: grid; gap: 28px; }
+    @media (min-width: 860px) { .gallery { grid-template-columns: 1fr 1fr; } .gallery .wide { grid-column: 1 / -1; } }
+    figure { margin: 0; }
+    figcaption { margin-top: 12px; color: var(--muted); font-size: 15px; }
+    figcaption strong { color: var(--text); }
+
+    /* features */
+    .features { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
+    .card p { margin: 0; color: var(--muted); font-size: 15px; }
+    .icon { width: 36px; height: 36px; border-radius: 10px; background: var(--accent-soft); display: grid; place-items: center; margin-bottom: 12px; }
+    .icon svg { width: 20px; height: 20px; fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* architecture */
+    .arch { display: grid; gap: 14px; }
+    @media (min-width: 900px) { .arch { grid-template-columns: 1fr 1fr 1fr; align-items: stretch; } }
+    .zone { border: 1.5px dashed var(--border); border-radius: var(--radius); padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .zone > .zone-title { font-size: 13px; font-weight: 650; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+    .node { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+    .node b { font-family: var(--mono); font-size: 14px; }
+    .node .tag { display: inline-block; margin-left: 6px; font-size: 11px; font-weight: 600; color: var(--accent); background: var(--accent-soft); padding: 1px 7px; border-radius: 999px; vertical-align: 1px; }
+    .node p { margin: 4px 0 0; font-size: 14px; color: var(--muted); }
+    .node.ext { background: var(--surface-2); }
+    .flow { margin: 28px 0 0; padding: 0; list-style: none; counter-reset: step; display: grid; gap: 12px; }
+    .flow li { counter-increment: step; display: grid; grid-template-columns: 32px 1fr; gap: 12px; align-items: start; }
+    .flow li::before { content: counter(step); width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: var(--on-accent); font-weight: 700; font-size: 14px; display: grid; place-items: center; }
+
+    /* stack table */
+    .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+    table { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 620px; }
+    th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); background: var(--surface-2); }
+    tr:last-child td { border-bottom: 0; }
+    td:first-child { font-weight: 600; white-space: nowrap; }
+    td:nth-child(3) { color: var(--muted); }
+
+    /* install */
+    .install { display: grid; gap: 32px; align-items: start; }
+    @media (min-width: 860px) { .install { grid-template-columns: 1.3fr 1fr; } }
+    .steps { margin: 0; padding-left: 1.3em; }
+    .steps li { margin-bottom: 10px; }
+    .popup-shot { max-width: 312px; margin: 0 auto; }
+
+    ul.plain { margin: 0; padding-left: 1.2em; }
+    ul.plain li { margin-bottom: 8px; }
+
+    footer { border-top: 1px solid var(--border); padding: 32px 0 48px; color: var(--muted); font-size: 14px; }
+    footer p { margin: 0 0 6px; }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="wrap">
+      <a class="brand" href="#">
+        <img src="logo.png" width="32" height="32" alt="">
+        Kartenansicht für Synology Photos
+      </a>
+      <nav aria-label="Seitennavigation">
+        <a href="#screenshots">Screenshots</a>
+        <a href="#funktionsweise">Funktionsweise</a>
+        <a href="#stack">Stack</a>
+        <a href="#installation">Installation</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap hero">
+      <span class="eyebrow">Browser-Erweiterung · Chrome &amp; Edge</span>
+      <h1>Alle Fotos mit Standort auf einer Karte</h1>
+      <p class="lead">Die Apps von Synology Photos haben eine Kartenansicht, die Weboberfläche nicht. Diese Erweiterung ergänzt sie: ein Klick auf „Karte“ zeigt jedes Foto mit GPS-Daten auf einer OpenStreetMap-Karte – gruppiert, mit Vorschaubildern und ohne zweiten Login.</p>
+      <div class="actions">
+        <a class="btn primary" href="#installation">Installieren</a>
+        <a class="btn" href="https://github.com/mafi-code/maps-extension-for-synology-photos">Quellcode auf GitHub</a>
+      </div>
+      <div class="frame">
+        <div class="frame-bar" aria-hidden="true"><span></span><span></span><span></span><em>Synology Photos · Kartenansicht</em></div>
+        <img src="screenshots/02-overview.webp" width="2560" height="1600" alt="Kartenansicht: Europa-Karte mit Foto-Gruppen, jede mit Vorschaubild und Anzahl der Fotos. Oben die Statuszeile „3.540 von 4.440 Fotos haben einen Standort“.">
+      </div>
+    </div>
+
+    <section id="screenshots">
+      <div class="wrap">
+        <h2>So sieht es aus</h2>
+        <p class="section-lead">Alle Screenshots zeigen Demo-Daten: gezeichnete Beispielmotive an echten Reisezielen, keine echten Fotos.</p>
+        <div class="gallery">
+          <figure>
+            <div class="frame"><img src="screenshots/01-button.webp" width="2560" height="1600" loading="lazy" decoding="async" alt="Foto-Übersicht mit einem blauen Button „Karte“ unten rechts."></div>
+            <figcaption><strong>Ein Button, sonst nichts.</strong> Unten rechts erscheint „Karte“ – die gewohnte Oberfläche bleibt unverändert.</figcaption>
+          </figure>
+          <figure>
+            <div class="frame"><img src="screenshots/03-city.webp" width="2560" height="1600" loading="lazy" decoding="async" alt="Stadtkarte von Barcelona mit vielen kleinen Foto-Gruppen und Einzelfotos."></div>
+            <figcaption><strong>Reinzoomen bis auf Straßenebene.</strong> Gruppen teilen sich beim Zoomen auf; das neueste Foto ist jeweils das Titelbild.</figcaption>
+          </figure>
+          <figure class="wide">
+            <div class="frame"><img src="screenshots/04-popup.webp" width="2560" height="1600" loading="lazy" decoding="async" alt="Geöffnetes Foto auf der Karte mit großer Vorschau, Dateiname, Aufnahmedatum und Ort „Barcelona, Spanien“."></div>
+            <figcaption><strong>Klick auf ein Foto</strong> zeigt eine große Vorschau mit Dateiname, Aufnahmezeit und Ort.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section id="funktionen">
+      <div class="wrap">
+        <h2>Funktionen</h2>
+        <p class="section-lead">Gebaut für große Bibliotheken – getestet mit rund 70.000 Fotos.</p>
+        <div class="features">
+          <div class="card">
+            <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+            <h3>Kein zweiter Login</h3>
+            <p>Nutzt die bestehende Sitzung im Browser. Jeder sieht genau die Fotos, die er auch in Synology Photos sieht.</p>
+          </div>
+          <div class="card">
+            <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="8" r="3"/><circle cx="17" cy="9" r="2"/><circle cx="10" cy="17" r="4"/></svg></div>
+            <h3>Gruppen mit Vorschau</h3>
+            <p>Nahe beieinander liegende Fotos werden zusammengefasst – mit Titelbild und Anzahl.</p>
+          </div>
+          <div class="card">
+            <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M12 7v5l3 2"/></svg></div>
+            <h3>30-Tage-Cache</h3>
+            <p>Standorte und Vorschaubilder bleiben 30 Tage gespeichert – die Karte ist beim nächsten Öffnen sofort da.</p>
+          </div>
+          <div class="card">
+            <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10"/></svg></div>
+            <h3>Persönlich &amp; geteilt</h3>
+            <p>Lädt den persönlichen Bereich und – falls vorhanden – den geteilten Bereich.</p>
+          </div>
+          <div class="card">
+            <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/></svg></div>
+            <h3>Minimale Rechte</h3>
+            <p>Zugriff nur auf die NAS-Adresse, für die die Erweiterung aktiviert wurde – jederzeit widerrufbar.</p>
+          </div>
+          <div class="card">
+            <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L2.4 17.5A2 2 0 0 0 4.1 20.5h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></div>
+            <h3>Robustes Laden</h3>
+            <p>Fehlgeschlagene Anfragen werden wiederholt; ein unvollständiger Stand wird angezeigt, aber nie gespeichert.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="funktionsweise">
+      <div class="wrap">
+        <h2>Funktionsweise</h2>
+        <p class="section-lead">Die Erweiterung läuft komplett im Browser. Es gibt keinen eigenen Server – Daten fließen nur zwischen Browser, NAS und den Kartenkacheln von OpenStreetMap.</p>
+
+        <div class="arch" role="img" aria-label="Architektur: Im Synology-Photos-Tab laufen page-hook.js und content.js, die Karte läuft in einem Erweiterungs-iframe; content.js spricht mit der Synology-Photos-API und OpenStreetMap.">
+          <div class="zone">
+            <div class="zone-title">Tab: Synology Photos</div>
+            <div class="node"><b>page-hook.js</b><span class="tag">MAIN world</span><p>Liest beim Seitenstart mit, welchen Session-Token (SynoToken) und API-Pfad die App selbst verwendet.</p></div>
+            <div class="node"><b>content.js</b><span class="tag">isolated</span><p>Button &amp; Overlay, lädt Fotos seitenweise, holt Vorschaubilder und Kartenkacheln.</p></div>
+          </div>
+          <div class="zone">
+            <div class="zone-title">Erweiterungs-iframe</div>
+            <div class="node"><b>map.html / map.js</b><p>Leaflet-Karte mit Marker-Clustern. Bekommt Fotos, Vorschaubilder und Kacheln per <code>postMessage</code>.</p></div>
+            <div class="node"><b>IndexedDB</b><p>30-Tage-Cache für Standorte (pro NAS und Benutzer) und Vorschaubilder.</p></div>
+            <div class="node"><b>popup.js</b><p>Schaltet die Erweiterung pro NAS-Adresse frei und registriert die Skripte.</p></div>
+          </div>
+          <div class="zone">
+            <div class="zone-title">Extern</div>
+            <div class="node ext"><b>Synology Photos Web API</b><p>Auf der eigenen NAS: Fotoliste mit GPS, Vorschaubilder, Benutzerkennung.</p></div>
+            <div class="node ext"><b>OpenStreetMap</b><p>Kartenkacheln. Geladen über content.js, damit die NAS-Adresse als Referer mitgeht.</p></div>
+          </div>
+        </div>
+
+        <ol class="flow">
+          <li><div><strong>Freischalten:</strong> Im Popup wird Zugriff auf genau eine NAS-Adresse erteilt; die Content-Scripts werden dynamisch nur dafür registriert.</div></li>
+          <li><div><strong>Mitlesen:</strong> <code>page-hook.js</code> merkt sich Token und API-Pfad aus den Anfragen der Synology-App – so sind keine Zugangsdaten nötig.</div></li>
+          <li><div><strong>Laden:</strong> <code>content.js</code> holt die Fotoliste in Seiten zu 500 Einträgen (mit Wiederholungen bei Fehlern) und filtert alle Fotos mit GPS-Daten heraus.</div></li>
+          <li><div><strong>Anzeigen:</strong> Die Karte im iframe gruppiert die Fotos und fordert nur Vorschaubilder für den sichtbaren Ausschnitt an.</div></li>
+          <li><div><strong>Merken:</strong> Vollständig geladene Standorte und angesehene Vorschaubilder landen 30 Tage im Cache.</div></li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="stack">
+      <div class="wrap">
+        <h2>Stack</h2>
+        <p class="section-lead">Bewusst schlank: reines JavaScript ohne Build-Schritt und ohne npm-Abhängigkeiten. Der Ordner kann direkt als Erweiterung geladen werden.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th scope="col">Bereich</th><th scope="col">Technik</th><th scope="col">Details</th></tr></thead>
+            <tbody>
+              <tr><td>Plattform</td><td>Chrome-Erweiterung, Manifest V3</td><td>Chrome und Edge ab Version 111</td></tr>
+              <tr><td>Sprache</td><td>JavaScript, HTML, CSS</td><td>Kein Framework, kein Bundler, kein Build-Schritt</td></tr>
+              <tr><td>Karte</td><td>Leaflet 1.9.4 + Leaflet.markercluster 1.5.3</td><td>Lokal mitgeliefert in <code>vendor/</code> (BSD-2 bzw. MIT)</td></tr>
+              <tr><td>Kartendaten</td><td>OpenStreetMap-Kacheln</td><td>Über das Content-Script geladen, damit OpenStreetMap einen Referer erhält</td></tr>
+              <tr><td>Datenquelle</td><td>Synology Photos Web API</td><td>Inoffiziell: <code>SYNO.Foto.Browse.Item</code>, <code>SYNO.Foto.Thumbnail</code>, <code>SYNO.Foto.UserInfo</code>, <code>SYNO.FotoTeam.*</code></td></tr>
+              <tr><td>Anmeldung</td><td>Bestehende Browser-Sitzung</td><td>Session-Cookie + <code>X-SYNO-TOKEN</code> (CSRF-Token der App)</td></tr>
+              <tr><td>Skripte</td><td><code>chrome.scripting.registerContentScripts</code></td><td>Dynamisch pro NAS; <code>page-hook.js</code> in der MAIN world, <code>content.js</code> isoliert</td></tr>
+              <tr><td>Berechtigungen</td><td><code>scripting</code>, <code>activeTab</code>, <code>optional_host_permissions</code></td><td>Host-Zugriff nur nach Freigabe im Popup</td></tr>
+              <tr><td>Kommunikation</td><td><code>window.postMessage</code></td><td>Content-Script ⇄ Karten-iframe; Absender und Herkunft werden geprüft</td></tr>
+              <tr><td>Cache</td><td>IndexedDB (Erweiterungs-Origin)</td><td>Standorte pro NAS + Benutzer, Vorschaubilder klein/mittel, 30 Tage gültig</td></tr>
+              <tr><td>Tests</td><td>Node.js + Edge headless über das DevTools-Protokoll</td><td>End-to-End gegen eine simulierte Synology Photos; dieselbe Technik erzeugt Screenshots und Icons</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="datenschutz">
+      <div class="wrap">
+        <h2>Datenschutz &amp; Sicherheit</h2>
+        <ul class="plain">
+          <li>Kein eigener Server, kein Tracking. Fotos und Standorte verlassen nie die Verbindung zwischen Browser und NAS.</li>
+          <li>Einzige externe Anfrage: Kartenkacheln von OpenStreetMap – dabei wird nur die NAS-Adresse als Referer übertragen.</li>
+          <li>Der Cache liegt in der Datenbank der Erweiterung im Browserprofil; die Synology-Seite selbst kann ihn nicht lesen.</li>
+          <li>Die Karte antwortet nur Seiten, für die die Erweiterung freigeschaltet ist – fremde Webseiten können sie nicht auslesen.</li>
+          <li>„Cache leeren“ im Popup löscht alle gespeicherten Daten sofort.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="installation">
+      <div class="wrap install">
+        <div>
+          <h2>Installation</h2>
+          <p class="section-lead">Die Erweiterung ist (noch) nicht im Chrome Web Store und wird als entpackte Erweiterung geladen.</p>
+          <ol class="steps">
+            <li>Repository herunterladen: <a href="https://github.com/mafi-code/maps-extension-for-synology-photos/archive/refs/heads/main.zip">ZIP-Datei</a> entpacken oder klonen.</li>
+            <li><code>chrome://extensions</code> bzw. <code>edge://extensions</code> öffnen und den <strong>Entwicklermodus</strong> einschalten.</li>
+            <li><strong>Entpackte Erweiterung laden</strong> und den entpackten Ordner auswählen.</li>
+            <li>Synology Photos im Browser öffnen und anmelden.</li>
+            <li>Auf das Erweiterungs-Symbol klicken → <strong>Für diese Adresse aktivieren</strong> → Zugriff erlauben.</li>
+            <li>Die Seite lädt neu – unten rechts erscheint der Button <strong>Karte</strong>.</li>
+          </ol>
+        </div>
+        <figure class="popup-shot">
+          <div class="frame"><img src="screenshots/05-popup-ui.webp" width="624" height="538" loading="lazy" decoding="async" alt="Popup der Erweiterung: NAS-Adresse, Status „Aktiv“ und die Buttons „Karte öffnen“, „Cache leeren“ und „Deaktivieren“."></div>
+          <figcaption>Das Popup: aktivieren, Karte öffnen, Cache leeren.</figcaption>
+        </figure>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p>Inoffizielles Open-Source-Projekt – nicht mit Synology Inc. verbunden. „Synology“ und „Synology Photos“ sind Marken der Synology Inc.</p>
+      <p>Kartendaten © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>-Mitwirkende · Karte mit <a href="https://leafletjs.com">Leaflet</a> · Screenshots mit Demo-Daten.</p>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,104 @@
+html, body, #map {
+  height: 100%;
+  margin: 0;
+}
+body {
+  background: #e9edf1;
+  font: 14px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Photo markers & clusters */
+.spm-icon {
+  background: none;
+  border: 0;
+}
+.spm-thumb {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  border: 3px solid #fff;
+  border-radius: 10px;
+  background: #d5dae1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  transition: transform 0.12s ease;
+}
+.spm-icon:hover .spm-thumb { transform: scale(1.06); }
+.spm-thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.spm-thumb.is-loading {
+  background: linear-gradient(90deg, #d5dae1 0%, #e6e9ee 50%, #d5dae1 100%);
+  background-size: 200% 100%;
+  animation: spm-shimmer 1.2s linear infinite;
+}
+.spm-thumb.is-broken { background: #b9c0c9; }
+@keyframes spm-shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .spm-thumb.is-loading { animation: none; }
+  .spm-thumb { transition: none; }
+}
+
+/* Cluster counter – teal (Marktplatz Hub accent) with a tiny magenta glow on
+   hover; follows the theme chosen in the popup (data-theme="mono" = black & white). */
+:root {
+  --spm-count-bg: #00e5ff;
+  --spm-count-text: #04121a;
+  --spm-count-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  --spm-hover-glow: 0 0 5px rgba(255, 47, 176, 0.65), 0 0 12px rgba(255, 47, 176, 0.3);
+}
+:root[data-theme="mono"] {
+  --spm-count-bg: #121211;
+  --spm-count-text: #f0efec;
+  --spm-count-shadow: 0 0 0 1px #f0efec;
+  --spm-hover-glow: 0 0 0 1px #f0efec;
+}
+.spm-icon:hover .spm-count { box-shadow: var(--spm-count-shadow), var(--spm-hover-glow); }
+.spm-icon:hover .spm-thumb { box-shadow: var(--spm-hover-glow), 0 2px 8px rgba(0, 0, 0, 0.35); }
+.spm-count {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  box-sizing: border-box;
+  border-radius: 11px;
+  background: var(--spm-count-bg);
+  color: var(--spm-count-text);
+  font: 600 11px/22px "Cascadia Code", Consolas, "JetBrains Mono", monospace;
+  text-align: center;
+  box-shadow: var(--spm-count-shadow);
+}
+
+/* Popup */
+.spm-leaflet-popup .leaflet-popup-content { margin: 10px; }
+.spm-popup-img {
+  width: 100%;
+  min-height: 160px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #eef1f4;
+}
+.spm-popup-img img {
+  display: block;
+  width: 100%;
+  max-height: 60vh;
+  object-fit: contain;
+}
+.spm-popup-meta { margin-top: 8px; }
+.spm-popup-name {
+  font-weight: 600;
+  word-break: break-all;
+}
+.spm-popup-sub {
+  margin-top: 2px;
+  color: #5b6470;
+  font-size: 12px;
+}

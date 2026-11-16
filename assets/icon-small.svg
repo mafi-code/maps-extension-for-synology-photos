@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <title>Kartenansicht für Synology Photos – Icon (klein)</title>
+  <!-- Simplified for 16/32 px: no grid, no glow, thicker strokes. -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0a0720"/>
+      <stop offset="1" stop-color="#1a0c3d"/>
+    </linearGradient>
+    <linearGradient id="edge" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#00e5ff"/>
+      <stop offset="1" stop-color="#ff2fb0"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="124" height="124" rx="28" fill="url(#bg)"/>
+  <path d="M10 98H118" stroke="#ff2fb0" stroke-width="7" stroke-linecap="round"/>
+  <path d="M64 108C56 95 32 74 32 50A32 32 0 1 1 96 50C96 74 72 95 64 108Z"
+        fill="#0d0a26" stroke="#00e5ff" stroke-width="12" stroke-linejoin="round"/>
+  <circle cx="64" cy="50" r="12" fill="#ff2fb0"/>
+  <rect x="4" y="4" width="120" height="120" rx="26" fill="none" stroke="url(#edge)" stroke-width="5"/>
+</svg>

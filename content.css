@@ -1,0 +1,171 @@
+/* Theme tokens – cyberpunk palette of Marktplatz Hub (default) and its dark
+   "Klassisch" palette for black & white (.spm-mono). */
+.spm-launcher,
+.spm-overlay {
+  --spm-bg: #070a12;
+  --spm-bg-2: #0b1020;
+  --spm-surface: #0e1424;
+  --spm-surface-2: #111a2e;
+  --spm-border: #1d2b46;
+  --spm-border-glow: #1f4d63;
+  --spm-text: #d7e6f5;
+  --spm-muted: #6f83a0;
+  --spm-emph: #ffffff;
+  --spm-accent: #00e5ff;
+  --spm-magenta: #ff2fb0;
+  --spm-bad: #ff3b5c;
+  --spm-glow: 0 0 6px rgba(0, 229, 255, 0.55), 0 0 18px rgba(0, 229, 255, 0.25);
+  --spm-glow-magenta: 0 0 6px rgba(255, 47, 176, 0.55), 0 0 18px rgba(255, 47, 176, 0.25);
+  --spm-mono: "Cascadia Code", "Consolas", "JetBrains Mono", "Courier New", monospace;
+}
+.spm-launcher.spm-mono,
+.spm-overlay.spm-mono {
+  --spm-bg: #121211;
+  --spm-bg-2: #121211;
+  --spm-surface: #1a1a19;
+  --spm-surface-2: #232321;
+  --spm-border: #2f2f2c;
+  --spm-border-glow: #3d3d39;
+  --spm-text: #f0efec;
+  --spm-muted: #8f8e86;
+  --spm-emph: #f0efec;
+  --spm-accent: #f0efec;
+  --spm-magenta: #f0efec;
+  --spm-bad: #f0efec;
+  --spm-glow: none;
+  --spm-glow-magenta: none;
+}
+
+/* Floating "Karte" button (modelled on the Marktplatz Hub FAB) */
+.spm-launcher {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 2147483000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 18px 0 14px;
+  border: 1px solid var(--spm-accent);
+  border-radius: 21px;
+  background: var(--spm-bg);
+  color: var(--spm-accent);
+  font: 600 13px/1 var(--spm-mono);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  box-shadow: var(--spm-glow);
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+.spm-launcher:hover { background: var(--spm-surface); }
+.spm-launcher:focus-visible { outline: 2px solid var(--spm-accent); outline-offset: 3px; }
+.spm-launcher[hidden] { display: none; }
+.spm-launcher svg {
+  width: 17px;
+  height: 17px;
+  fill: var(--spm-magenta);
+  filter: drop-shadow(0 0 4px rgba(255, 47, 176, 0.6));
+}
+.spm-launcher.spm-mono svg { filter: none; }
+
+/* Map overlay */
+.spm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483001;
+  display: flex;
+  flex-direction: column;
+  background: var(--spm-bg);
+  color: var(--spm-text);
+  font: 13px/1.4 "Segoe UI", system-ui, sans-serif;
+}
+.spm-overlay[hidden] { display: none; }
+
+.spm-bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 52px;
+  padding: 0 12px 0 18px;
+  border-bottom: 1px solid var(--spm-border);
+  background: linear-gradient(180deg, var(--spm-surface-2), var(--spm-bg-2));
+}
+.spm-title {
+  font: 600 15px/1 var(--spm-mono);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--spm-emph);
+  text-shadow: var(--spm-glow);
+}
+.spm-title::before {
+  content: "\258E";
+  margin-right: 4px;
+  color: var(--spm-magenta);
+  text-shadow: var(--spm-glow-magenta);
+}
+.spm-status {
+  flex: 1;
+  min-width: 0;
+  font: 12px/1.3 var(--spm-mono);
+  color: var(--spm-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.spm-status.is-error { color: var(--spm-bad); }
+
+.spm-btn {
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--spm-border-glow);
+  border-radius: 4px;
+  background: var(--spm-surface-2);
+  color: var(--spm-text);
+  font: 600 12px/1 var(--spm-mono);
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s, color 0.15s;
+}
+.spm-btn:hover { border-color: var(--spm-accent); color: var(--spm-accent); box-shadow: var(--spm-glow); }
+.spm-btn:focus-visible { outline: 2px solid var(--spm-accent); outline-offset: 1px; }
+.spm-close { width: 32px; padding: 0; font-size: 15px; }
+
+.spm-diag {
+  flex: none;
+  max-height: 40vh;
+  overflow: auto;
+  padding: 12px 18px;
+  background: var(--spm-bg-2);
+  border-bottom: 1px solid var(--spm-border);
+  border-left: 2px solid var(--spm-magenta);
+  font: 12px/1.45 var(--spm-mono);
+}
+.spm-diag[hidden] { display: none; }
+.spm-diag pre {
+  margin: 8px 0;
+  padding: 8px;
+  max-height: 25vh;
+  overflow: auto;
+  background: var(--spm-surface);
+  border: 1px solid var(--spm-border);
+  color: var(--spm-text);
+  font: 12px/1.4 var(--spm-mono);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.spm-frame {
+  flex: 1;
+  display: block;
+  width: 100%;
+  min-height: 0;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spm-launcher,
+  .spm-btn { transition: none; }
+}

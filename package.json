@@ -1,0 +1,13 @@
+{
+  "name": "synology-photos-map",
+  "private": true,
+  "description": "Kartenansicht für die Weboberfläche von Synology Photos (Chrome/Edge-Erweiterung)",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node tools/e2e-test.mjs",
+    "screenshots": "node tools/screenshots.mjs",
+    "logo": "node tools/render-logo.mjs"
+  }
+}
