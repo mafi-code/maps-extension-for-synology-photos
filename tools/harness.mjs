@@ -19,9 +19,11 @@ const EXT_FILES = ['manifest.json', 'content.js', 'content.css', 'map.html', 'ma
 
 // The real extension is enabled per NAS via the popup (a click the test can't
 // make), so the test copy declares static content scripts for 127.0.0.1.
+// EXT_SOURCE=<folder> tests another copy of the extension, e.g. the unpacked release zip.
 export function makeTestExtension({ demoHook = false } = {}) {
+  const source = process.env.EXT_SOURCE ? path.resolve(process.env.EXT_SOURCE) : ROOT;
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'spm-ext-'));
-  for (const f of EXT_FILES) fs.cpSync(path.join(ROOT, f), path.join(dir, f), { recursive: true });
+  for (const f of EXT_FILES) fs.cpSync(path.join(source, f), path.join(dir, f), { recursive: true });
 
   const manifestPath = path.join(dir, 'manifest.json');
   const m = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));

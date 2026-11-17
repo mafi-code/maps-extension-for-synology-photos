@@ -31,9 +31,9 @@ All screenshots use demo data (generated sample scenes at real travel destinatio
 
 ## Installation
 
-1. Open `chrome://extensions` (or `edge://extensions`).
-2. Turn on **Developer mode**.
-3. **Load unpacked** → select the folder of this repository.
+1. Download the latest release: **[Releases](https://github.com/mafi-code/maps-extension-for-synology-photos/releases/latest)** → `maps-extension-for-synology-photos-vX.Y.Z.zip`, and unpack it.
+2. Open `chrome://extensions` (or `edge://extensions`) and turn on **Developer mode**.
+3. **Load unpacked** → select the unpacked folder.
 4. Open Synology Photos in the browser and sign in.
 5. Click the extension icon → **Enable for this address** → allow access.
    The page reloads and the **Map** button appears at the bottom right.
@@ -76,8 +76,11 @@ No build step and no npm dependencies. The tools in `tools/` need Node.js 22+ an
 | `npm test` | End-to-end test against a simulated Synology Photos (first load, cache, 70,000 photos with a NAS hiccup, English UI) |
 | `npm run screenshots` | regenerates `docs/screenshots/{en,de}/*.webp` with demo data |
 | `npm run logo` | renders `assets/*.svg` to the icons in `icons/`, `docs/logo.png` and the banners |
+| `npm run package` | builds the installable zip in `dist/` – only the files the extension needs |
 
 UI texts live in `_locales/en/messages.json` and `_locales/de/messages.json`.
+
+**Releasing:** raise `version` in `manifest.json`, commit, then push a tag with the same version (`git tag v0.3.1 && git push origin v0.3.1`). The GitHub Action in `.github/workflows/release.yml` builds the zip, creates the release and attaches the zip.
 
 ## Files
 
@@ -94,6 +97,7 @@ UI texts live in `_locales/en/messages.json` and `_locales/de/messages.json`.
 | `assets/` | Logo, small icon and banners as SVG sources |
 | `tools/` | Test, screenshots and logo rendering (not part of the extension) |
 | `docs/` | Project page for GitHub Pages (`index.html` English, `de.html` German) |
+| `.github/workflows/` | Release automation (zip per version tag) |
 
 ## License
 

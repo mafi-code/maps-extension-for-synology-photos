@@ -31,9 +31,9 @@ Alle Screenshots zeigen Demo-Daten (generierte Beispielmotive an echten Reisezie
 
 ## Installation
 
-1. `chrome://extensions` (bzw. `edge://extensions`) öffnen.
-2. **Entwicklermodus** einschalten.
-3. **Entpackte Erweiterung laden** → den Ordner dieses Repositorys auswählen.
+1. Neueste Version herunterladen: **[Releases](https://github.com/mafi-code/maps-extension-for-synology-photos/releases/latest)** → `maps-extension-for-synology-photos-vX.Y.Z.zip` und entpacken.
+2. `chrome://extensions` (bzw. `edge://extensions`) öffnen und den **Entwicklermodus** einschalten.
+3. **Entpackte Erweiterung laden** → den entpackten Ordner auswählen.
 4. Synology Photos im Browser öffnen und anmelden.
 5. Auf das Erweiterungs-Symbol klicken → **Für diese Adresse aktivieren** → Zugriff erlauben.
    Die Seite lädt neu, unten rechts erscheint der Button **Karte**.
@@ -78,8 +78,11 @@ und Microsoft Edge gebraucht (Google Chrome lädt seit Version 137 keine Erweite
 | `npm test` | End-to-End-Test gegen eine simulierte Synology Photos (erstes Laden, Cache, 70.000 Fotos mit NAS-Aussetzer, englische Oberfläche) |
 | `npm run screenshots` | erzeugt `docs/screenshots/{en,de}/*.webp` mit Demo-Daten neu |
 | `npm run logo` | rendert `assets/*.svg` zu den Icons in `icons/` sowie `docs/logo.png` und den Bannern |
+| `npm run package` | baut das installierbare Zip in `dist/` – nur die Dateien, die die Erweiterung braucht |
 
 Texte der Oberfläche liegen in `_locales/en/messages.json` und `_locales/de/messages.json`.
+
+**Neue Version veröffentlichen:** `version` in `manifest.json` erhöhen, committen, dann ein Tag mit derselben Version pushen (`git tag v0.3.1 && git push origin v0.3.1`). Die GitHub Action in `.github/workflows/release.yml` baut das Zip, legt das Release an und hängt das Zip an.
 
 ## Dateien
 
@@ -96,6 +99,7 @@ Texte der Oberfläche liegen in `_locales/en/messages.json` und `_locales/de/mes
 | `assets/` | Logo, kleines Icon und Banner als SVG-Quellen |
 | `tools/` | Test, Screenshots und Logo-Rendering (nicht Teil der Erweiterung) |
 | `docs/` | Projektseite für GitHub Pages (`index.html` Englisch, `de.html` Deutsch) |
+| `.github/workflows/` | Release-Automatisierung (Zip pro Versions-Tag) |
 
 ## Lizenz
 
